@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ask Astro — OneUnited Bank</title>
+  <meta name="description" content="Ask Astro is a proactive search surface from Salesforce.">
+  <link rel="icon" type="image/x-icon" href="astro.jpeg">
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Sora:wght@400;600;700&display=swap" rel="stylesheet">
+
+  <!-- Phosphor Icons — synchronous to avoid icon FOUC -->
+  <script src="https://unpkg.com/@phosphor-icons/web@2.1.1/src/index.js"></script>
+
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <!-- ═══════════════════════════════════════════════════════════════════════
+       DEMO CONTROLS BAR  (fixed floating pill, toggle with ⌘K)
+       ═══════════════════════════════════════════════════════════════════════ -->
+  <nav id="demo-controls">
+    <span class="ctrl-label">Chrome</span>
+    <select id="ctrl-chrome-select" class="ctrl-select">
+      <option value="new-tab">Browser New Tab</option>
+      <option value="salesforce">Salesforce — Ask Astro</option>
+      <option value="teams">Microsoft Teams</option>
+      <option value="mac-app">Mac Desktop App</option>
+      <option value="claude-ext">Claude Extension</option>
+      <option value="chatgpt-ext">ChatGPT Extension</option>
+    </select>
+
+    <div class="ctrl-divider"></div>
+
+    <button id="ctrl-theme-toggle" class="ctrl-btn">
+      <i class="ph ph-moon"></i>
+      <span id="theme-label">Light</span>
+    </button>
+
+    <div class="ctrl-divider"></div>
+
+    <!-- Settings gear — hides upload + API key from main view -->
+    <div id="ctrl-settings-wrapper">
+      <button id="ctrl-settings-btn" class="ctrl-btn" title="Settings">
+        <i class="ph ph-gear"></i>
+      </button>
+      <div id="ctrl-settings-dropdown">
+        <label class="ctrl-dropdown-label">Claude API Key</label>
+        <input
+          type="password"
+          id="ctrl-api-key"
+          class="ctrl-api-input"
+          placeholder="sk-ant-api03-…"
+          autocomplete="off"
+          spellcheck="false"
+        >
+        <div class="ctrl-dropdown-divider"></div>
+        <button id="ctrl-upload-btn" class="ctrl-dropdown-upload-btn">
+          <i class="ph ph-upload-simple"></i>
+          Upload customer document
+        </button>
+        <input type="file" id="ctrl-file-input" accept=".txt,.md,.json,.csv" style="display:none">
+        <p class="ctrl-dropdown-hint">Upload a .txt, .md, .json, or .csv file to generate AI-powered proactive cards for any customer.</p>
+      </div>
+    </div>
+
+    <span class="ctrl-branding">
+      Salesforce - Ask Astro
+      <kbd style="margin-left:8px; font-size:10px; opacity:0.5; border:1px solid currentColor; padding:2px 4px; border-radius:4px;">⌘K</kbd>
+    </span>
+
+  </nav>
+
+
+  <!-- ═══════════════════════════════════════════════════════════════════════
+       CHROME 1 — BROWSER NEW TAB
+       ═══════════════════════════════════════════════════════════════════════ -->
+  <div id="chrome-new-tab" class="chrome-wrapper chrome-active">
+
+    <div class="new-tab-hero">
+      <!-- <div class="live-clock new-tab-time"></div>
+      <div class="live-date new-tab-date"></div> -->
+      <div class="new-tab-greeting" id="new-tab-greeting"></div>
+    </div>
+
+    <div class="cards-mount"></div>
+
+    <div class="search-bar-area nt-search-area">
+      <div class="search-input-wrap">
+        <i class="ph ph-magnifying-glass search-icon"></i>
+        <input type="text" class="proactive-search-input" placeholder="Ask anything about your workspace…" data-chrome="new-tab">
+        <button class="search-ask-btn">Ask</button>
+      </div>
+    </div>
+
+  </div>
+
+
+  <!-- ═══════════════════════════════════════════════════════════════════════
+       CHROME 2 — SALESFORCE FULL PAGE (Ask Astro)
+       ═══════════════════════════════════════════════════════════════════════ -->
+  <div id="chrome-salesforce" class="chrome-wrapper">
+
+    <!-- Lightning left nav -->
+    <nav class="sf-nav">
+      <div class="sf-nav-logo" title="Salesforce">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+          <path d="M12 2C9.5 2 7.3 3.3 6 5.3C5.3 4.5 4.3 4 3 4C1.3 4 0 5.3 0 7C0 7.6 0.2 8.1 0.5 8.5C0.2 9 0 9.6 0 10.3C0 12.4 1.7 14 3.7 14H3.8C4.1 15.2 5.2 16 6.5 16C7 16 7.5 15.9 7.9 15.6C8.7 17.1 10.2 18 12 18C13.8 18 15.3 17 16.1 15.5C16.5 15.8 17 16 17.5 16C18.8 16 19.9 15.2 20.2 14H20.3C22.3 14 24 12.4 24 10.3C24 9.6 23.8 9 23.5 8.5C23.8 8.1 24 7.6 24 7C24 5.3 22.7 4 21 4C19.7 4 18.7 4.5 18 5.3C16.7 3.3 14.5 2 12 2Z" fill="white"/>
+        </svg>
+      </div>
+      <div class="sf-nav-icon active" title="Home"><i class="ph ph-house"></i></div>
+      <div class="sf-nav-icon" title="Chatter"><i class="ph ph-chat-circle-dots"></i></div>
+      <div class="sf-nav-icon" title="Opportunities"><i class="ph ph-currency-dollar-simple"></i></div>
+      <div class="sf-nav-icon" title="Accounts"><i class="ph ph-buildings"></i></div>
+      <div class="sf-nav-icon" title="Contacts"><i class="ph ph-users"></i></div>
+      <div class="sf-nav-icon" title="Cases"><i class="ph ph-headset"></i></div>
+      <div class="sf-nav-icon" title="Reports"><i class="ph ph-chart-bar"></i></div>
+    </nav>
+
+    <!-- Main area — has two child states: sf-body (default) and sf-ask-view (Ask Astro mode) -->
+    <div class="sf-main-area">
+      <header class="sf-top-bar">
+        <span class="sf-app-name">Sales Cloud</span>
+        <div class="sf-search-bar">
+          <i class="ph ph-magnifying-glass"></i>
+          <span>Search Salesforce…</span>
+        </div>
+        <button class="sf-ask-trigger sf-topbar-ask-btn">✦ Ask Astro</button>
+        <div style="margin-left:auto;display:flex;align-items:center;gap:12px;">
+          <i class="ph ph-bell" style="color:rgba(255,255,255,0.7);font-size:18px;cursor:pointer;"></i>
+          <i class="ph ph-question" style="color:rgba(255,255,255,0.7);font-size:18px;cursor:pointer;"></i>
+          <div class="avatar-circle small" style="background:#4caf50;font-size:11px;">CR</div>
+        </div>
+      </header>
+
+      <!-- Default state: greeting + cards + inline search bar -->
+      <main class="sf-body">
+        <h1 class="sf-greeting">Hi Carmen, What needs your attention?</h1>
+        <p class="sf-prompt">Here's what Astro surfaced for you today across all your connected sources.</p>
+        <div class="sf-section-label">Recommendations</div>
+        <div class="cards-mount"></div>
+      </main>
+
+      <!-- Ask Astro full-page view (toggled on by .sf-ask-mode class) -->
+      <div class="sf-ask-view">
+        <button class="sf-ask-back">
+          <i class="ph ph-arrow-left"></i> Back to feed
+        </button>
+
+        <div class="sf-ask-hero">
+          <img src="astro.jpeg" class="sf-ask-logo" alt="Astro" onerror="this.style.display='none'">
+          <h1 class="sf-ask-heading">Good afternoon, Carmen.</h1>
+          <p class="sf-ask-sub">What's on your mind today?</p>
+          <div class="sf-ask-input-wrap">
+            <i class="ph ph-sparkle" style="color:#0176d3;font-size:18px;flex-shrink:0;"></i>
+            <input type="text" id="sf-ask-input" class="proactive-search-input sf-ask-search-input"
+                   placeholder="Ask Astro anything — deals, contacts, docs, cases…"
+                   data-chrome="salesforce-fullpage">
+            <button class="search-ask-btn sf-ask-submit">Ask</button>
+          </div>
+        </div>
+
+        <div class="sf-ask-results-area">
+          <div class="cards-mount"></div>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <!-- ═══════════════════════════════════════════════════════════════════════
+       CHROME 3 — MICROSOFT TEAMS
+       ═══════════════════════════════════════════════════════════════════════ -->
+  <div id="chrome-teams" class="chrome-wrapper">
+
+    <!-- Top search bar — spans full width (grid col 1/-1, row 1) -->
+    <div class="teams-top-bar">
+      <div class="teams-search-input-wrap">
+        <i class="ph ph-magnifying-glass" style="color:rgba(255,255,255,0.5);flex-shrink:0;"></i>
+        <input type="text" class="proactive-search-input teams-top-search"
+               placeholder="Search" data-chrome="teams">
+      </div>
+    </div>
+
+    <!-- Left sidebar nav -->
+    <nav class="teams-sidebar">
+      <!-- Activity (Bell) — active by default, shows Astro Feed -->
+      <div class="teams-sidebar-icon active" data-panel="activity" title="Activity">
+        <i class="ph ph-bell"></i>
+      </div>
+      <!-- Chat — click to show fake Teams chat -->
+      <div class="teams-sidebar-icon" data-panel="chat" title="Chat">
+        <i class="ph ph-chat-circle-dots"></i>
+      </div>
+      <div class="teams-sidebar-icon" data-panel="none" title="Teams">
+        <i class="ph ph-users-three"></i>
+      </div>
+      <div class="teams-sidebar-icon" data-panel="none" title="Calendar">
+        <i class="ph ph-calendar"></i>
+      </div>
+      <div class="teams-sidebar-icon" data-panel="none" title="Files">
+        <i class="ph ph-folder-open"></i>
+      </div>
+      <div class="teams-sidebar-icon" data-panel="none" title="Calls">
+        <i class="ph ph-phone"></i>
+      </div>
+      <div class="teams-sidebar-icon" data-panel="none" title="Apps" style="margin-top:auto;">
+        <i class="ph ph-squares-four"></i>
+      </div>
+      <div class="teams-sidebar-icon" data-panel="none" title="Help">
+        <i class="ph ph-question"></i>
+      </div>
+    </nav>
+
+    <!-- Activity feed view — shown when Bell icon is active (default) -->
+    <div class="teams-content-area">
+      <div class="teams-activity-header">
+        <h2 class="teams-activity-title">
+          <i class="ph ph-sparkle" style="color:#a9abf5;font-size:15px;"></i>
+          Astro Feed for Carmen
+        </h2>
+        <div class="teams-activity-controls">
+          <button class="teams-activity-filter">
+            <i class="ph ph-funnel"></i> Filter
+          </button>
+          <button class="teams-activity-more"><i class="ph ph-dots-three"></i></button>
+        </div>
+      </div>
+      <div class="cards-mount"></div>
+    </div>
+
+    <!-- Chat view — shown when Chat icon is clicked (hidden by default) -->
+    <div class="teams-chat-view">
+      <!-- Left: conversation list -->
+      <div class="teams-chat-list">
+        <div class="teams-chat-list-header">
+          <h3>Chat</h3>
+          <button class="teams-new-chat-btn" title="New Chat"><i class="ph ph-pencil-simple"></i></button>
+        </div>
+        <div class="teams-conv-item active" data-conv="marcus">
+          <div class="teams-conv-avatar" style="background:#4f46e5">MT</div>
+          <div class="teams-conv-info">
+            <span class="teams-conv-name">Marcus Thompson</span>
+            <span class="teams-conv-preview">See you at 2pm! 👍</span>
+          </div>
+          <span class="teams-conv-time">2m</span>
+        </div>
+        <div class="teams-conv-item" data-conv="keisha">
+          <div class="teams-conv-avatar" style="background:#059669">KW</div>
+          <div class="teams-conv-info">
+            <span class="teams-conv-name">Keisha Williams</span>
+            <span class="teams-conv-preview">FDIC deadline is March 15</span>
+          </div>
+          <span class="teams-conv-time">9:47 AM</span>
+        </div>
+        <div class="teams-conv-item" data-conv="david">
+          <div class="teams-conv-avatar" style="background:#0176d3">DC</div>
+          <div class="teams-conv-info">
+            <span class="teams-conv-name">David Chen</span>
+            <span class="teams-conv-preview">Sent you a draft this morning</span>
+          </div>
+          <span class="teams-conv-time">8:30 AM</span>
+        </div>
+        <div class="teams-conv-item" data-conv="amara">
+          <div class="teams-conv-avatar" style="background:#d97706">AO</div>
+          <div class="teams-conv-info">
+            <span class="teams-conv-name">Amara Osei</span>
+            <span class="teams-conv-preview">All three briefs are attached</span>
+          </div>
+          <span class="teams-conv-time">Yesterday</span>
+        </div>
+      </div>
+
+      <!-- Right: message thread -->
+      <div class="teams-chat-thread">
+        <div class="teams-thread-header">
+          <strong class="tth-name">Marcus Thompson</strong>
+          <span class="tth-title">SVP Operations</span>
+        </div>
+        <div class="teams-messages" id="teams-messages-area"></div>
+        <div class="teams-message-input-row">
+          <div class="teams-message-input-wrap">
+            <i class="ph ph-smiley" style="color:var(--text-muted);font-size:18px;flex-shrink:0;"></i>
+            <input type="text" placeholder="Type a new message" class="teams-msg-input">
+            <button class="teams-send-btn" title="Send"><i class="ph ph-paper-plane-tilt"></i></button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+
+  <!-- ═══════════════════════════════════════════════════════════════════════
+       CHROME 4 — MAC DESKTOP APP
+       ═══════════════════════════════════════════════════════════════════════ -->
+  <div id="chrome-mac-app" class="chrome-wrapper">
+
+    <div class="mac-window">
+
+      <div class="mac-titlebar">
+        <div class="mac-traffic">
+          <div class="mac-dot close" title="Close"></div>
+          <div class="mac-dot min" title="Minimize"></div>
+          <div class="mac-dot max" title="Maximize"></div>
+        </div>
+        <div class="mac-title">Proactive — OneUnited Bank</div>
+        <div style="width:60px;display:flex;justify-content:flex-end;">
+          <span class="live-clock" style="font-size:12px;color:rgba(255,255,255,0.5);"></span>
+        </div>
+      </div>
+
+      <div class="mac-menubar">
+        <span>File</span>
+        <span>Edit</span>
+        <span>View</span>
+        <span>Window</span>
+        <span>Help</span>
+        <span style="margin-left:auto;display:flex;align-items:center;gap:6px;font-size:12px;">
+          <i class="ph ph-wifi-high" style="font-size:13px;"></i>
+          <i class="ph ph-battery-full" style="font-size:13px;"></i>
+        </span>
+      </div>
+
+      <main class="mac-body">
+        <div class="mac-greeting" id="mac-greeting"></div>
+        <div class="mac-subgreeting">
+          <span class="live-date"></span> &nbsp;·&nbsp; OneUnited Bank &nbsp;·&nbsp; Sales Director
+        </div>
+        <div class="cards-mount"></div>
+
+        <!-- Search bar below cards -->
+        <div class="search-bar-area mac-search-area">
+          <div class="search-input-wrap">
+            <i class="ph ph-magnifying-glass search-icon"></i>
+            <input type="text" class="proactive-search-input" placeholder="Search your workspace…" data-chrome="mac-app">
+            <button class="search-ask-btn">Ask</button>
+          </div>
+        </div>
+      </main>
+
+    </div>
+
+  </div>
+
+
+  <!-- ═══════════════════════════════════════════════════════════════════════
+       CHROME 5 — CLAUDE EXTENSION
+       ═══════════════════════════════════════════════════════════════════════ -->
+  <div id="chrome-claude-ext" class="chrome-wrapper">
+
+    <nav class="claude-sidebar">
+      <div class="claude-logo-area">
+        <div class="claude-logo-mark">
+          <i class="ph ph-robot"></i>
+        </div>
+        <span class="claude-logo-text">Claude</span>
+      </div>
+
+      <div class="claude-nav-item">New conversation</div>
+      <div class="claude-nav-item active">Astro from Salesforce</div>
+      <div class="claude-nav-item">History</div>
+      <div class="claude-nav-item">Projects</div>
+      <div class="claude-nav-item">Settings</div>
+
+      <div style="margin-top:auto;padding-top:12px;border-top:1px solid rgba(255,255,255,0.06);">
+        <div class="claude-extension-pill">
+          <i class="ph ph-sparkle"></i>
+          Proactive is on
+        </div>
+        <div class="claude-nav-item" style="font-size:12px;margin-top:6px;">
+          <span style="opacity:0.5;">carmen.rodriguez@</span><br>
+          <span style="opacity:0.5;">oneunited.com</span>
+        </div>
+      </div>
+    </nav>
+
+    <main class="claude-main">
+      <div class="claude-heading">
+        <i class="ph ph-sparkle"></i>
+        What needs your attention, Carmen?
+      </div>
+      <div class="cards-mount"></div>
+
+      <!-- Claude-styled command bar -->
+      <div class="search-bar-area claude-cmd-bar">
+        <div class="search-input-wrap">
+          <span class="claude-cmd-icon">✦</span>
+          <input type="text" class="proactive-search-input" placeholder="Ask Claude about your work…" data-chrome="claude-ext">
+          <button class="search-ask-btn claude-ask-btn">Ask</button>
+        </div>
+      </div>
+    </main>
+
+  </div>
+
+
+  <!-- ═══════════════════════════════════════════════════════════════════════
+       CHROME 6 — CHATGPT EXTENSION
+       ═══════════════════════════════════════════════════════════════════════ -->
+  <div id="chrome-chatgpt-ext" class="chrome-wrapper">
+
+    <nav class="chatgpt-sidebar">
+      <div class="chatgpt-logo-area">
+        <div class="chatgpt-logo-mark">
+          <svg width="16" height="16" viewBox="0 0 41 41" fill="currentColor">
+            <path d="M37.532 16.87a9.963 9.963 0 0 0-.856-8.184 10.078 10.078 0 0 0-10.855-4.835 9.964 9.964 0 0 0-6.744-2.979 10.079 10.079 0 0 0-9.616 6.988 9.967 9.967 0 0 0-6.52 4.839 10.079 10.079 0 0 0 1.24 11.817 9.965 9.965 0 0 0 .856 8.185 10.079 10.079 0 0 0 10.855 4.835 9.965 9.965 0 0 0 6.744 2.979 10.079 10.079 0 0 0 9.617-6.988 9.967 9.967 0 0 0 6.52-4.839 10.079 10.079 0 0 0-1.241-11.818zm-17.441 24.168a7.474 7.474 0 0 1-4.799-1.735c.061-.033.168-.091.237-.134l7.964-4.6a1.294 1.294 0 0 0 .655-1.134V19.054l3.366 1.944a.12.12 0 0 1 .066.092v9.299a7.505 7.505 0 0 1-7.49 7.649zm-16.134-6.971a7.471 7.471 0 0 1-.894-5.023c.06.036.162.099.237.141l7.964 4.6a1.297 1.297 0 0 0 1.308 0l9.724-5.614v3.888a.12.12 0 0 1-.048.103l-8.051 4.649a7.504 7.504 0 0 1-10.24-2.744zm-2.087-17.42a7.47 7.47 0 0 1 3.901-3.289c0 .068-.004.19-.004.274v9.201a1.294 1.294 0 0 0 .654 1.132l9.723 5.614-3.366 1.944a.12.12 0 0 1-.114.012L8.208 25.53a7.505 7.505 0 0 1-4.338-8.882zm27.658 6.437l-9.724-5.615 3.367-1.943a.121.121 0 0 1 .114-.012l8.048 4.648a7.498 7.498 0 0 1-1.158 13.528v-9.476a1.293 1.293 0 0 0-.647-1.13zm3.35-5.043c-.059-.037-.162-.099-.236-.141l-7.965-4.6a1.298 1.298 0 0 0-1.308 0l-9.723 5.614v-3.888a.12.12 0 0 1 .048-.103l8.05-4.645a7.497 7.497 0 0 1 11.135 7.763zm-21.063 6.929l-3.367-1.944a.12.12 0 0 1-.065-.092v-9.299a7.497 7.497 0 0 1 12.293-5.756 6.94 6.94 0 0 0-.236.134l-7.965 4.6a1.294 1.294 0 0 0-.654 1.132l-.006 11.225zm1.829-3.943l4.33-2.501 4.332 2.498v4.993l-4.331 2.5-4.331-2.5V21.027z"/>
+          </svg>
+        </div>
+        <span class="chatgpt-logo-text">ChatGPT</span>
+      </div>
+
+      <button style="width:100%; padding:9px 12px; background:rgba(128,128,128,0.1); border:1px solid rgba(128,128,128,0.2); border-radius:8px; color:inherit; font-size:13px; cursor:pointer; text-align:left; margin-bottom:10px; font-family:inherit; display:flex; align-items:center; gap:8px; transition:background 0.15s;">
+        <i class="ph ph-pencil-simple"></i>
+        <span style="color:var(--sidebar-text, inherit);">New chat</span>
+      </button>
+
+      <div class="chatgpt-nav-item">ChatGPT</div>
+
+      <div class="chatgpt-nav-item" style="background:rgba(128,128,128,0.1); color:inherit; font-weight:500;">
+        Astro from Salesforce
+      </div>
+
+      <div class="chatgpt-nav-item">Explore GPTs</div>
+      <div class="chatgpt-nav-item">History</div>
+
+      <div style="margin-top:auto;padding-top:12px;border-top:1px solid rgba(255,255,255,0.06);">
+        <div class="chatgpt-extension-badge">
+          <i class="ph ph-sparkle"></i>
+          Salesforce - Astro Extension
+        </div>
+        <div class="chatgpt-nav-item" style="margin-top:6px; font-size:12px; opacity:0.6; color:inherit;">
+          carmen@oneunited.com
+        </div>
+      </div>
+    </nav>
+
+    <main class="chatgpt-main">
+      <div class="chatgpt-heading">
+        <i class="ph ph-sparkle"></i>
+        Salesforce Astro Insights
+        <span style="font-size:13px;font-weight:400;color:#8e8ea0;margin-left:6px;">OneUnited Bank · Carmen Rodriguez</span>
+      </div>
+      <div class="cards-mount"></div>
+
+      <!-- ChatGPT-styled command bar -->
+      <div class="search-bar-area chatgpt-cmd-bar">
+        <div class="search-input-wrap">
+          <i class="ph ph-sparkle" style="color:#10a37f;flex-shrink:0;font-size:16px;"></i>
+          <input type="text" class="proactive-search-input" placeholder="Message Astro…" data-chrome="chatgpt-ext">
+          <button class="search-ask-btn chatgpt-ask-btn">Ask</button>
+        </div>
+      </div>
+    </main>
+
+  </div>
+
+
+  <!-- ═══════════════════════════════════════════════════════════════════════
+       SIDE PANEL  (shared across all chromes)
+       ═══════════════════════════════════════════════════════════════════════ -->
+  <div id="panel-overlay"></div>
+
+  <div id="side-panel">
+    <div class="panel-header">
+      <div class="panel-meta-icon">
+        <i class="ph ph-sparkle" id="panel-header-icon"></i>
+      </div>
+      <h2 class="panel-title" id="panel-title-text">Panel</h2>
+      <button class="panel-close-btn" id="panel-close-btn" aria-label="Close panel">
+        <i class="ph ph-x"></i>
+      </button>
+    </div>
+    <div class="panel-body" id="panel-body"></div>
+  </div>
+
+
+  <!-- ═══════════════════════════════════════════════════════════════════════
+       TOAST CONTAINER
+       ═══════════════════════════════════════════════════════════════════════ -->
+  <div id="toast-container"></div>
+
+
+  <!-- ═══════════════════════════════════════════════════════════════════════
+       SCRIPTS  (data first, then panels, then app)
+       ═══════════════════════════════════════════════════════════════════════ -->
+  <script src="data.js"></script>
+  <script src="panels.js"></script>
+  <script src="app.js"></script>
+
+</body>
+</html>
