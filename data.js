@@ -507,6 +507,198 @@ Sales Director, OneUnited Bank`
   // AI UPLOAD PANEL PLACEHOLDER
   // (populated at runtime by app.js after Claude API response)
   // ─────────────────────────────────────────────────────────────────────────
-  aiPanelContent: null
+  aiPanelContent: null,
+
+  // ─────────────────────────────────────────────────────────────────────────
+  // ASTRO COWORK — SCENARIOS & AGENT DEFINITIONS
+  // OneUnited Bank context: 4 enterprise scenarios, each with specialist agents
+  // ─────────────────────────────────────────────────────────────────────────
+  coworkScenarios: {
+
+    'board-meeting': {
+      key: 'board-meeting',
+      label: 'Board Meeting Prep',
+      exampleGoal: 'Prepare me for my board meeting tomorrow',
+      intentLabel: 'prepare you for tomorrow\'s Q2 Strategy Board Review',
+      keywords: ['board', 'meeting', 'prepare', 'prep', 'strategy review', 'tomorrow', 'talking points'],
+      agents: [
+        {
+          id: 'cal-bm', name: 'Calendar Agent', icon: 'ph-calendar', color: '#0176d3',
+          actions: ['Fetching tomorrow\'s agenda…', 'Found Q2 Strategy Review at 2:00 PM', 'Identifying 8 attendees…', 'Checking for conflicts…'],
+          result: 'Q2 Strategy Review · 2:00 PM · 8 attendees'
+        },
+        {
+          id: 'crm-bm', name: 'CRM Agent', icon: 'ph-currency-dollar-simple', color: '#059669',
+          actions: ['Querying Salesforce pipeline…', 'Flagged Beacon Capital — 14 days silent', 'Pulling Mass Housing deal status…', 'Summarizing $4.2M pipeline…'],
+          result: '$4.2M pipeline · 2 deals flagged'
+        },
+        {
+          id: 'res-bm', name: 'Research Agent', icon: 'ph-magnifying-glass', color: '#7c3aed',
+          actions: ['Scanning Google Drive for recent docs…', 'Q2 Budget Reforecast trending (7 readers)…', 'Pulling FDIC updated guidelines…', 'Indexing 3 relevant documents…'],
+          result: '3 documents surfaced · 1 trending'
+        },
+        {
+          id: 'wri-bm', name: 'Writing Agent', icon: 'ph-pencil', color: '#da7756',
+          actions: ['Synthesizing research + CRM data…', 'Drafting 5 talking points…', 'Highlighting Beacon Capital risk…', 'Formatting board-ready brief…'],
+          result: '5-point executive brief ready'
+        }
+      ],
+      results: [
+        {
+          title: 'Board Meeting Brief', subtitle: '5 talking points · Q2 Strategy Review · Ready to present',
+          icon: 'ph-file-text', color: '#0176d3', primaryAction: 'Open Brief', secondaryAction: 'Send to Team'
+        },
+        {
+          title: 'Deal Alert: Beacon Capital', subtitle: '14 days no activity · $2.4M at risk · Competitor contact detected',
+          icon: 'ph-warning-circle', color: '#ef4444', primaryAction: 'View in Salesforce', secondaryAction: 'Draft Follow-up'
+        },
+        {
+          title: 'Q2 Budget Reforecast Summary', subtitle: '7% upward revision · Trending among 7 leaders today',
+          icon: 'ph-presentation-chart', color: '#059669', primaryAction: 'Open Document', secondaryAction: 'Add to Brief'
+        }
+      ]
+    },
+
+    'follow-up': {
+      key: 'follow-up',
+      label: 'Follow Up Stale Leads',
+      exampleGoal: 'Follow up with leads who haven\'t responded in 2+ weeks',
+      intentLabel: 'identify and re-engage leads that have gone quiet',
+      keywords: ['follow up', 'follow-up', 'leads', 'silent', 'no response', 'stale', 'quiet', 'outreach', '2 weeks', '14 days', 'prospect'],
+      agents: [
+        {
+          id: 'crm-fu', name: 'CRM Agent', icon: 'ph-currency-dollar-simple', color: '#059669',
+          actions: ['Querying opps with no activity ≥14 days…', 'Found Beacon Capital — 14 days silent…', 'Checking Mass Housing last touchpoint…', '2 opportunities need attention…'],
+          result: '2 opportunities need attention'
+        },
+        {
+          id: 'res-fu', name: 'Research Agent', icon: 'ph-magnifying-glass', color: '#7c3aed',
+          actions: ['Scanning news for Beacon Capital…', 'Detected First Citizens Bank competitor outreach…', 'Pulling Mass Housing RFP update…', 'Identifying re-engagement hooks…'],
+          result: '1 competitor threat · 1 new angle found'
+        },
+        {
+          id: 'wri-fu', name: 'Writing Agent', icon: 'ph-pencil', color: '#da7756',
+          actions: ['Drafting personalized Beacon Capital email…', 'Weaving in CDFI co-lending offer (+30 bps)…', 'Referencing Miami branch expansion…', 'Drafting Mass Housing check-in note…'],
+          result: '2 personalized emails drafted'
+        },
+        {
+          id: 'com-fu', name: 'Communication Agent', icon: 'ph-chat-circle-dots', color: '#d97706',
+          actions: ['Queuing emails in Outbox…', 'Checking Carmen\'s send-time preferences…', 'Scheduling optimal send window (8 AM Tue)…', 'Ready for review and approval…'],
+          result: '2 emails queued · awaiting approval'
+        }
+      ],
+      results: [
+        {
+          title: 'Follow-up: Sarah Kim (Beacon Capital)', subtitle: 'Personalized · CDFI offer + Miami branch angle · Optimal send: 8 AM Tuesday',
+          icon: 'ph-envelope', color: '#059669', primaryAction: 'Review & Send', secondaryAction: 'Edit Draft'
+        },
+        {
+          title: 'Check-in: Mass Housing Authority', subtitle: 'References upcoming March 31 close date · Professional tone',
+          icon: 'ph-envelope', color: '#0176d3', primaryAction: 'Review & Send', secondaryAction: 'Edit Draft'
+        },
+        {
+          title: 'Competitor Alert: Beacon Capital', subtitle: 'First Citizens Bank visited their offices last week · Act within 48h',
+          icon: 'ph-warning-circle', color: '#ef4444', primaryAction: 'View Intelligence', secondaryAction: 'Escalate to Marcus'
+        }
+      ]
+    },
+
+    'compliance': {
+      key: 'compliance',
+      label: 'Q1 Compliance Risk Summary',
+      exampleGoal: 'Summarize Q1 compliance risks in our loan portfolio',
+      intentLabel: 'surface and summarize compliance risks across the Q1 loan portfolio',
+      keywords: ['compliance', 'risk', 'fdic', 'cra', 'loan portfolio', 'q1', 'examination', 'regulatory', 'audit', 'capital ratio'],
+      agents: [
+        {
+          id: 'res-cr', name: 'Research Agent', icon: 'ph-magnifying-glass', color: '#7c3aed',
+          actions: ['Pulling FDIC updated guidelines (March 2026)…', 'Scanning CRA assessment document…', 'Querying compliance case history…', 'Cross-referencing 3 regulatory sources…'],
+          result: '3 compliance sources indexed'
+        },
+        {
+          id: 'ana-cr', name: 'Analysis Agent', icon: 'ph-chart-bar', color: '#4285f4',
+          actions: ['Analyzing Q1 capital ratio data…', 'HMDA: denial rate disparity in Dorchester…', 'Comparing ratios vs. new 8% FDIC threshold…', 'Scoring 3 risk areas by severity…'],
+          result: '3 risk areas · 1 critical flagged'
+        },
+        {
+          id: 'com-cr', name: 'Compliance Agent', icon: 'ph-shield-check', color: '#dc2626',
+          actions: ['Validating CDFI supplemental report status…', 'Checking FDIC examination response deadline…', 'Reviewing CRA Fair Lending sections…', 'Flagging items for legal review…'],
+          result: '2 deadlines at risk · Mar 15 critical'
+        },
+        {
+          id: 'wri-cr', name: 'Writing Agent', icon: 'ph-pencil', color: '#da7756',
+          actions: ['Drafting executive risk summary…', 'Prioritizing items by urgency…', 'Adding remediation recommendations…', 'Formatting for board distribution…'],
+          result: 'Executive risk summary complete'
+        }
+      ],
+      results: [
+        {
+          title: 'Q1 Compliance Risk Summary', subtitle: '3 risk areas · 2 deadlines flagged · Board-ready executive format',
+          icon: 'ph-shield-check', color: '#dc2626', primaryAction: 'Open Report', secondaryAction: 'Share with Keisha'
+        },
+        {
+          title: 'FDIC Response Due: March 15', subtitle: '6 days remaining · Section 3.2 capital ratio response required',
+          icon: 'ph-calendar-x', color: '#f59e0b', primaryAction: 'View Task', secondaryAction: 'Notify Keisha'
+        },
+        {
+          title: 'Fair Lending: HMDA Disparity Flagged', subtitle: 'Dorchester zip codes · Denial rate 12% above benchmark · Legal review needed',
+          icon: 'ph-warning-circle', color: '#ef4444', primaryAction: 'View Analysis', secondaryAction: 'Open CRA Doc'
+        }
+      ]
+    },
+
+    'intel': {
+      key: 'intel',
+      label: 'Weekly Intel Report Setup',
+      exampleGoal: 'Set up a weekly competitive intelligence report for me',
+      intentLabel: 'set up a recurring weekly competitive intelligence report delivered every Monday',
+      keywords: ['weekly', 'intelligence', 'competitive', 'intel', 'report', 'recurring', 'monitor', 'fintech', 'competitor', 'landscape'],
+      agents: [
+        {
+          id: 'res-ir', name: 'Research Agent', icon: 'ph-magnifying-glass', color: '#7c3aed',
+          actions: ['Identifying key sources to monitor…', 'Fintech: Plaid, MX Technologies, Greenwood…', 'Setting up First Citizens Bank tracker…', 'Configuring CDFI market pulse feed…'],
+          result: '8 intelligence sources configured'
+        },
+        {
+          id: 'ana-ir', name: 'Analysis Agent', icon: 'ph-chart-bar', color: '#4285f4',
+          actions: ['Structuring weekly report template…', 'Defining significance thresholds…', 'Configuring trend detection filters…', 'Setting competitor movement alerts…'],
+          result: 'Report template + alert filters ready'
+        },
+        {
+          id: 'wri-ir', name: 'Writing Agent', icon: 'ph-pencil', color: '#da7756',
+          actions: ['Building this week\'s first report…', 'Surfacing Plaid partnership opportunity…', 'Flagging First Citizens expansion activity…', 'Formatting for executive reading…'],
+          result: 'Issue #1 of weekly report ready'
+        },
+        {
+          id: 'cal-ir', name: 'Calendar Agent', icon: 'ph-calendar', color: '#0176d3',
+          actions: ['Scheduling weekly Monday delivery…', 'Setting 8:00 AM delivery window…', 'Adding to Carmen\'s calendar…', 'Confirmed recurrence through Q2 2026…'],
+          result: 'Scheduled every Mon at 8:00 AM'
+        }
+      ],
+      results: [
+        {
+          title: 'Competitive Intel Report · Issue #1', subtitle: 'Plaid partnership · First Citizens activity · CDFI market pulse · Mar 10, 2026',
+          icon: 'ph-trend-up', color: '#7c3aed', primaryAction: 'Read Report', secondaryAction: 'Customize'
+        },
+        {
+          title: 'Weekly Intel Report · Recurring', subtitle: 'Every Monday at 8:00 AM · Delivered to Proactive Feed · Through Q2 2026',
+          icon: 'ph-calendar-check', color: '#0176d3', primaryAction: 'View Schedule', secondaryAction: 'Adjust Timing'
+        },
+        {
+          title: 'High-priority: Plaid Partnership Window', subtitle: 'Amara flagged inbound interest · Decision requested by March 20',
+          icon: 'ph-sparkle', color: '#059669', primaryAction: 'View Brief', secondaryAction: 'Schedule Call'
+        }
+      ]
+    }
+
+  },
+
+  // Quick example goals shown in the Cowork idle state
+  coworkExamples: [
+    { key: 'board-meeting', label: 'Prepare for my board meeting tomorrow',   icon: 'ph-presentation-chart', exampleGoal: 'Prepare me for my board meeting tomorrow' },
+    { key: 'follow-up',     label: 'Follow up with leads silent 2+ weeks',    icon: 'ph-envelope-open',      exampleGoal: 'Follow up with leads who haven\'t responded in 2+ weeks' },
+    { key: 'compliance',    label: 'Summarize Q1 compliance risks',            icon: 'ph-shield-check',       exampleGoal: 'Summarize Q1 compliance risks in our loan portfolio' },
+    { key: 'intel',         label: 'Set up weekly competitive intel report',   icon: 'ph-trend-up',           exampleGoal: 'Set up a weekly competitive intelligence report for me' }
+  ]
 
 };

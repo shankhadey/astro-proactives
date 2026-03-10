@@ -31,6 +31,8 @@
       <option value="mac-app">Mac Desktop App</option>
       <option value="claude-ext">Claude Extension</option>
       <option value="chatgpt-ext">ChatGPT Extension</option>
+      <option value="cowork">✦ Astro Cowork</option>
+      <option value="iphone">iPhone App</option>
     </select>
 
     <div class="ctrl-divider"></div>
@@ -92,7 +94,10 @@
       <div class="search-input-wrap">
         <i class="ph ph-magnifying-glass search-icon"></i>
         <input type="text" class="proactive-search-input" placeholder="Ask anything about your workspace…" data-chrome="new-tab">
-        <button class="search-ask-btn">Ask</button>
+        <div class="ask-mode-toggle">
+          <button class="ask-mode-opt active" data-mode="ask">Ask Astro</button>
+          <button class="ask-mode-opt cowork-mode" data-mode="cowork">✦ Cowork</button>
+        </div>
       </div>
     </div>
 
@@ -128,7 +133,10 @@
           <i class="ph ph-magnifying-glass"></i>
           <span>Search Salesforce…</span>
         </div>
-        <button class="sf-ask-trigger sf-topbar-ask-btn">✦ Ask Astro</button>
+        <div class="sf-ask-mode-btn sf-ask-trigger">
+          <button class="sf-ask-mode-opt active" data-mode="ask">✦ Ask Astro</button>
+          <button class="sf-ask-mode-opt cowork-opt" data-mode="cowork">✦ Astro Cowork</button>
+        </div>
         <div style="margin-left:auto;display:flex;align-items:center;gap:12px;">
           <i class="ph ph-bell" style="color:rgba(255,255,255,0.7);font-size:18px;cursor:pointer;"></i>
           <i class="ph ph-question" style="color:rgba(255,255,255,0.7);font-size:18px;cursor:pointer;"></i>
@@ -154,6 +162,10 @@
           <img src="astro.jpeg" class="sf-ask-logo" alt="Astro" onerror="this.style.display='none'">
           <h1 class="sf-ask-heading">Good afternoon, Carmen.</h1>
           <p class="sf-ask-sub">What's on your mind today?</p>
+          <div class="sf-ask-mode-inner">
+            <button class="sf-ask-mode-inner-opt active" data-mode="ask">Ask Astro</button>
+            <button class="sf-ask-mode-inner-opt cowork-inner" data-mode="cowork">✦ Astro Cowork</button>
+          </div>
           <div class="sf-ask-input-wrap">
             <i class="ph ph-sparkle" style="color:#0176d3;font-size:18px;flex-shrink:0;"></i>
             <input type="text" id="sf-ask-input" class="proactive-search-input sf-ask-search-input"
@@ -339,7 +351,10 @@
           <div class="search-input-wrap">
             <i class="ph ph-magnifying-glass search-icon"></i>
             <input type="text" class="proactive-search-input" placeholder="Search your workspace…" data-chrome="mac-app">
-            <button class="search-ask-btn">Ask</button>
+            <div class="ask-mode-toggle">
+              <button class="ask-mode-opt active" data-mode="ask">Ask Astro</button>
+              <button class="ask-mode-opt cowork-mode" data-mode="cowork">✦ Cowork</button>
+            </div>
           </div>
         </div>
       </main>
@@ -392,7 +407,10 @@
         <div class="search-input-wrap">
           <span class="claude-cmd-icon">✦</span>
           <input type="text" class="proactive-search-input" placeholder="Ask Claude about your work…" data-chrome="claude-ext">
-          <button class="search-ask-btn claude-ask-btn">Ask</button>
+          <div class="ask-mode-toggle">
+            <button class="ask-mode-opt active" data-mode="ask">Ask Astro</button>
+            <button class="ask-mode-opt cowork-mode" data-mode="cowork">✦ Cowork</button>
+          </div>
         </div>
       </div>
     </main>
@@ -453,11 +471,237 @@
         <div class="search-input-wrap">
           <i class="ph ph-sparkle" style="color:#10a37f;flex-shrink:0;font-size:16px;"></i>
           <input type="text" class="proactive-search-input" placeholder="Message Astro…" data-chrome="chatgpt-ext">
-          <button class="search-ask-btn chatgpt-ask-btn">Ask</button>
+          <div class="ask-mode-toggle">
+            <button class="ask-mode-opt active" data-mode="ask">Ask Astro</button>
+            <button class="ask-mode-opt cowork-mode" data-mode="cowork">✦ Cowork</button>
+          </div>
         </div>
       </div>
     </main>
 
+  </div>
+
+
+  <!-- ═══════════════════════════════════════════════════════════════════════
+       CHROME 7 — ASTRO COWORK
+       Full-page agentic work interface for enterprise task orchestration
+       ═══════════════════════════════════════════════════════════════════════ -->
+  <div id="chrome-cowork" class="chrome-wrapper">
+
+    <!-- Left sidebar -->
+    <nav class="cw-sidebar">
+      <div class="cw-logo">
+        <i class="ph ph-sparkle"></i>
+        Astro Cowork
+        <span class="cw-beta-badge">Beta</span>
+      </div>
+
+      <button class="cw-new-task-btn">
+        <i class="ph ph-plus"></i> New task
+      </button>
+
+      <div class="cw-nav-section">Active</div>
+      <div id="cw-active-tasks"></div>
+
+      <div class="cw-nav-section">Completed</div>
+      <div id="cw-done-tasks"></div>
+
+      <div class="cw-sidebar-footer">
+        <div class="cw-user-row">
+          <div class="avatar-circle small" style="background:#da7756;font-size:11px;">CR</div>
+          <span>carmen@oneunited.com</span>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Main content -->
+    <main class="cw-main">
+
+      <!-- ── State: Idle (goal input) ── -->
+      <div class="cw-state" id="cw-state-idle">
+        <div class="cw-hero-greeting" id="cw-greeting"></div>
+        <p class="cw-hero-sub">What do you need done? Describe it in plain English — or any language.</p>
+
+        <div class="cw-goal-input-wrap">
+          <i class="ph ph-sparkle cw-goal-icon"></i>
+          <textarea class="cw-goal-textarea" id="cw-goal-input" rows="2"
+            placeholder="e.g. Prepare me for my board meeting tomorrow — pull relevant deals, flag compliance items, and draft my talking points."></textarea>
+          <button class="cw-goal-submit" id="cw-goal-submit" title="Start agents (Enter)">
+            <i class="ph ph-arrow-up"></i>
+          </button>
+        </div>
+
+        <!-- Delivery preferences -->
+        <div class="cw-delivery-row">
+          <span class="cw-delivery-label">Deliver to:</span>
+          <div class="cw-delivery-chips">
+            <button class="cw-delivery-chip active" data-target="feed">Proactive Feed</button>
+            <button class="cw-delivery-chip" data-target="slack">Slack DM</button>
+            <button class="cw-delivery-chip" data-target="email">Email</button>
+            <button class="cw-delivery-chip" data-target="salesforce">Salesforce</button>
+          </div>
+          <span class="cw-delivery-when-label">When:</span>
+          <div class="cw-delivery-chips">
+            <button class="cw-delivery-chip active" data-when="now">Now</button>
+            <button class="cw-delivery-chip" data-when="morning">Tomorrow 8 AM</button>
+            <button class="cw-delivery-chip" data-when="weekly">Weekly (recurring)</button>
+          </div>
+        </div>
+
+        <div class="cw-examples-label">Try an example:</div>
+        <div class="cw-examples-grid" id="cw-examples"></div>
+      </div>
+
+      <!-- ── State: Running (agents at work) ── -->
+      <div class="cw-state" id="cw-state-running">
+        <!-- Goal echo -->
+        <div class="cw-goal-echo" id="cw-goal-echo"></div>
+
+        <!-- Intent understood -->
+        <div class="cw-intent-understood" id="cw-intent-understood">
+          <i class="ph ph-check-circle"></i>
+          <span id="cw-intent-text"></span>
+        </div>
+
+        <!-- Coordinator orchestrator card -->
+        <div class="cw-orchestrator-row">
+          <div class="cw-orchestrator-card" id="cw-orchestrator-card">
+            <div class="cw-agent-icon-wrap orchestrator">
+              <i class="ph ph-git-branch"></i>
+            </div>
+            <div class="cw-agent-info">
+              <div class="cw-agent-name">Coordinator</div>
+              <div class="cw-agent-action" id="cw-coord-action">Analyzing your goal…</div>
+            </div>
+            <div class="cw-agent-status-dot thinking"></div>
+          </div>
+        </div>
+
+        <!-- Specialist agents grid (injected by cowork.js) -->
+        <div class="cw-agents-grid" id="cw-agents-grid"></div>
+
+        <button class="cw-cancel-btn" id="cw-cancel-btn">
+          <i class="ph ph-stop-circle"></i> Stop agents
+        </button>
+      </div>
+
+      <!-- ── State: Results ── -->
+      <div class="cw-state" id="cw-state-results">
+        <div class="cw-results-header">
+          <i class="ph ph-check-circle cw-results-check"></i>
+          <div>
+            <div class="cw-results-title">All agents finished</div>
+            <div class="cw-results-sub" id="cw-results-sub"></div>
+          </div>
+          <button class="cw-new-task-inline">+ New task</button>
+        </div>
+
+        <div class="cw-results-grid" id="cw-results-grid"></div>
+
+        <div class="cw-delivery-confirm" id="cw-delivery-confirm"></div>
+      </div>
+
+    </main>
+  </div>
+
+
+  <!-- ═══════════════════════════════════════════════════════════════════════
+       CHROME 8 — IPHONE APP
+       iPhone 15 Pro device frame — Astro Cowork mobile experience
+       ═══════════════════════════════════════════════════════════════════════ -->
+  <div id="chrome-iphone" class="chrome-wrapper">
+    <div class="iphone-device">
+
+      <!-- iOS status bar (with dynamic island) -->
+      <div class="iphone-statusbar">
+        <span class="iphone-time">9:41</span>
+        <div class="iphone-statusbar-icons">
+          <i class="ph ph-cell-signal-full"></i>
+          <i class="ph ph-wifi-high"></i>
+          <i class="ph ph-battery-full"></i>
+        </div>
+      </div>
+
+      <!-- App navigation bar -->
+      <div class="iphone-app-header">
+        <div class="iphone-header-left">
+          <div class="iphone-avatar">CR</div>
+        </div>
+        <div class="iphone-header-center">
+          <i class="ph ph-sparkle"></i>
+          Astro Cowork
+        </div>
+        <div class="iphone-header-right">
+          <i class="ph ph-bell"></i>
+        </div>
+      </div>
+
+      <!-- Scrollable content -->
+      <div class="iphone-scroll-body">
+        <div class="iphone-greeting" id="iphone-greeting"></div>
+
+        <!-- Quick action grid -->
+        <div class="iphone-quick-actions">
+          <button class="iphone-qa-btn" data-goal="board-meeting">
+            <i class="ph ph-presentation-chart"></i>
+            <span>Board prep</span>
+          </button>
+          <button class="iphone-qa-btn" data-goal="follow-up">
+            <i class="ph ph-envelope-open"></i>
+            <span>Follow-ups</span>
+          </button>
+          <button class="iphone-qa-btn" data-goal="compliance">
+            <i class="ph ph-shield-check"></i>
+            <span>Compliance</span>
+          </button>
+          <button class="iphone-qa-btn" data-goal="intel">
+            <i class="ph ph-trend-up"></i>
+            <span>Intel report</span>
+          </button>
+        </div>
+
+        <div class="iphone-section-label">Active Agents</div>
+        <div class="iphone-agents-list" id="iphone-agents"></div>
+
+        <div class="iphone-section-label" style="margin-top:16px;">Recent Results</div>
+        <div class="iphone-results-list" id="iphone-results"></div>
+
+        <!-- Bottom spacer -->
+        <div style="height: 20px;"></div>
+      </div>
+
+      <!-- Bottom goal input bar -->
+      <div class="iphone-input-bar">
+        <div class="iphone-input-wrap">
+          <i class="ph ph-sparkle iphone-input-icon"></i>
+          <input type="text" class="iphone-input" id="iphone-goal-input"
+                 placeholder="What do you need done?">
+          <button class="iphone-input-submit" id="iphone-submit">
+            <i class="ph ph-arrow-up"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Tab bar -->
+      <div class="iphone-tabbar">
+        <div class="iphone-tab active">
+          <i class="ph ph-house-simple"></i><span>Home</span>
+        </div>
+        <div class="iphone-tab">
+          <i class="ph ph-sparkle"></i><span>Agents</span>
+        </div>
+        <div class="iphone-tab">
+          <i class="ph ph-check-square"></i><span>Done</span>
+        </div>
+        <div class="iphone-tab">
+          <i class="ph ph-user-circle"></i><span>Profile</span>
+        </div>
+      </div>
+
+      <!-- iOS home indicator -->
+      <div class="iphone-home-indicator"></div>
+
+    </div>
   </div>
 
 
@@ -492,6 +736,7 @@
   <script src="data.js"></script>
   <script src="panels.js"></script>
   <script src="app.js"></script>
+  <script src="cowork.js"></script>
 
 </body>
 </html>

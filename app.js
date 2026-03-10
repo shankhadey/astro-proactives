@@ -11,7 +11,9 @@ const CHROME_IDS = {
   'teams':        'chrome-teams',
   'mac-app':      'chrome-mac-app',
   'claude-ext':   'chrome-claude-ext',
-  'chatgpt-ext':  'chrome-chatgpt-ext'
+  'chatgpt-ext':  'chrome-chatgpt-ext',
+  'cowork':       'chrome-cowork',
+  'iphone':       'chrome-iphone'
 };
 
 let _currentChrome = 'new-tab';
@@ -38,6 +40,8 @@ document.addEventListener('DOMContentLoaded', () => {
   _initPanelClose();
   _initSearchBars();
   _initTeamsChat();
+  // Cowork init runs after DOM is ready (cowork.js loaded after app.js)
+  setTimeout(() => window.Cowork?.init(), 0);
   switchChrome('new-tab');
 });
 
@@ -62,10 +66,12 @@ function _initGreeting() {
 
   const ntEl  = document.getElementById('new-tab-greeting');
   const macEl = document.getElementById('mac-greeting');
+  const cwEl  = document.getElementById('cw-greeting');
   if (ntEl)  ntEl.textContent = greeting;
   if (macEl) macEl.textContent = greeting;
+  if (cwEl)  cwEl.textContent = greeting;
 
-  // Also update the SF Ask Astro hero greeting
+  // SF Ask Astro hero greeting
   const sfHero = document.querySelector('.sf-ask-heading');
   if (sfHero) sfHero.textContent = `Good ${parts}, Carmen.`;
 }
@@ -278,6 +284,12 @@ function switchChrome(value) {
   if (!target) return;
 
   target.classList.add('chrome-active');
+
+  // Cowork + iPhone chromes have no cards-mount — delegate to Cowork module
+  if (value === 'cowork' || value === 'iphone') {
+    window.Cowork?.onChromeActive(value);
+    return;
+  }
 
   // Short delay for polish then render
   const mount = target.querySelector('.cards-mount');
