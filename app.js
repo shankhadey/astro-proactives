@@ -67,9 +67,11 @@ function _initGreeting() {
   const ntEl  = document.getElementById('new-tab-greeting');
   const macEl = document.getElementById('mac-greeting');
   const cwEl  = document.getElementById('cw-greeting');
+  const sfEl  = document.getElementById('sf-greeting');
   if (ntEl)  ntEl.textContent = greeting;
   if (macEl) macEl.textContent = greeting;
   if (cwEl)  cwEl.textContent = greeting;
+  if (sfEl)  sfEl.textContent = greeting;
 
   // SF Ask Astro hero greeting
   const sfHero = document.querySelector('.sf-ask-heading');
@@ -284,6 +286,12 @@ function switchChrome(value) {
   if (!target) return;
 
   target.classList.add('chrome-active');
+
+  // Sync global mode toggle: cowork → "Astro Cowork" active; everything else → "Ask Astro"
+  const _toggleMode = value === 'cowork' ? 'cowork' : 'ask';
+  document.querySelectorAll('#global-mode-toggle .global-mode-btn').forEach(b => {
+    b.classList.toggle('active', b.dataset.mode === _toggleMode);
+  });
 
   // Cowork + iPhone chromes have no cards-mount — delegate to Cowork module
   if (value === 'cowork' || value === 'iphone') {
