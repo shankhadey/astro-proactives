@@ -493,7 +493,11 @@
       <div class="cw-logo">
         <i class="ph ph-sparkle"></i>
         Astro Cowork
-        <span class="cw-beta-badge">Beta</span>
+      </div>
+
+      <div class="cw-mode-switch">
+        <button class="cw-mode-btn" data-mode="ask">Ask Astro</button>
+        <button class="cw-mode-btn active" data-mode="cowork">✦ Cowork</button>
       </div>
 
       <button class="cw-new-task-btn">
@@ -524,7 +528,7 @@
 
         <div class="cw-goal-input-wrap">
           <i class="ph ph-sparkle cw-goal-icon"></i>
-          <textarea class="cw-goal-textarea" id="cw-goal-input" rows="2"
+          <textarea class="cw-goal-textarea" id="cw-goal-input" rows="4"
             placeholder="e.g. Prepare me for my board meeting tomorrow — pull relevant deals, flag compliance items, and draft my talking points."></textarea>
           <button class="cw-goal-submit" id="cw-goal-submit" title="Start agents (Enter)">
             <i class="ph ph-arrow-up"></i>
@@ -533,18 +537,23 @@
 
         <!-- Delivery preferences -->
         <div class="cw-delivery-row">
-          <span class="cw-delivery-label">Deliver to:</span>
-          <div class="cw-delivery-chips">
-            <button class="cw-delivery-chip active" data-target="feed">Proactive Feed</button>
-            <button class="cw-delivery-chip" data-target="slack">Slack DM</button>
-            <button class="cw-delivery-chip" data-target="email">Email</button>
-            <button class="cw-delivery-chip" data-target="salesforce">Salesforce</button>
+          <div class="cw-delivery-line">
+            <span class="cw-delivery-label">Deliver to:</span>
+            <div class="cw-delivery-chips">
+              <button class="cw-delivery-chip active" data-target="feed">Astro Feed</button>
+              <button class="cw-delivery-chip" data-target="slack">Slack DM</button>
+              <button class="cw-delivery-chip" data-target="email">Email</button>
+            </div>
           </div>
-          <span class="cw-delivery-when-label">When:</span>
-          <div class="cw-delivery-chips">
-            <button class="cw-delivery-chip active" data-when="now">Now</button>
-            <button class="cw-delivery-chip" data-when="morning">Tomorrow 8 AM</button>
-            <button class="cw-delivery-chip" data-when="weekly">Weekly (recurring)</button>
+          <div class="cw-delivery-line">
+            <span class="cw-delivery-when-label">When:</span>
+            <div class="cw-delivery-chips">
+              <button class="cw-delivery-chip active" data-when="now">Now</button>
+              <button class="cw-delivery-chip" data-when="morning">Tomorrow 8 AM</button>
+              <button class="cw-delivery-chip" data-when="daily">Daily at 8 AM</button>
+              <button class="cw-delivery-chip" data-when="hourly">Hourly</button>
+              <button class="cw-delivery-chip" data-when="weekly">Weekly (recurring)</button>
+            </div>
           </div>
         </div>
 
