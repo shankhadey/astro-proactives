@@ -3340,3 +3340,34 @@ body {
 [data-theme="light"] .md-commit-item { background: rgba(0,0,0,0.03); }
 [data-theme="light"] .md-cowork-item { background: rgba(1,118,211,0.04); border-color: rgba(1,118,211,0.1); }
 [data-theme="light"] .md-focus-item { background: rgba(16,185,129,0.04); border-color: rgba(16,185,129,0.12); }
+
+/* ─── 27. MORNING DIGEST — SIGNALS SECTION ─────────────────────────────────── */
+.md-signal-item {
+  display: flex;
+  gap: 8px;
+  padding: 8px 12px;
+  background: var(--bg-secondary);
+  border-radius: var(--radius-sm);
+}
+.md-signal-icon { font-size: 14px; color: var(--text-secondary); flex-shrink: 0; margin-top: 1px; }
+.md-signal-text { flex: 1; }
+.md-signal-content { font-size: 12px; color: var(--text-primary); line-height: 1.4; }
+.md-signal-meta { font-size: 10px; color: var(--text-muted); margin-top: 2px; }
+
+/* Fallback items (empty sections) */
+.md-fallback {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  font-size: 12px;
+  color: var(--text-muted);
+  font-style: italic;
+  background: var(--bg-secondary);
+  border-radius: var(--radius-sm);
+  border: 1px dashed var(--border-subtle);
+}
+.md-fallback i { font-size: 14px; flex-shrink: 0; }
+
+[data-theme="light"] .md-signal-item { background: rgba(0,0,0,0.03); }
+[data-theme="light"] .md-fallback { background: rgba(0,0,0,0.02); }
