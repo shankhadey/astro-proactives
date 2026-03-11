@@ -113,6 +113,55 @@ body {
   --ctrl-border: rgba(0,0,0,0.12);
 }
 
+/* ─── 3b. GLOBAL MODE TOGGLE ────────────────────────────────────────────────── */
+#global-mode-toggle {
+  position: fixed;
+  top: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10000;
+  display: flex;
+  background: rgba(0,0,0,0.55);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 24px;
+  padding: 3px;
+  gap: 2px;
+}
+.global-mode-btn {
+  padding: 6px 18px;
+  font-size: 13px;
+  font-weight: 500;
+  font-family: var(--font-body);
+  color: rgba(255,255,255,0.6);
+  background: none;
+  border: none;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+}
+.global-mode-btn.active {
+  background: rgba(255,255,255,0.15);
+  color: #fff;
+}
+.global-mode-btn:hover:not(.active) {
+  color: rgba(255,255,255,0.85);
+}
+[data-theme="light"] #global-mode-toggle {
+  background: rgba(255,255,255,0.85);
+  border-color: rgba(0,0,0,0.1);
+  box-shadow: 0 2px 12px rgba(0,0,0,0.1);
+}
+[data-theme="light"] .global-mode-btn {
+  color: rgba(0,0,0,0.5);
+}
+[data-theme="light"] .global-mode-btn.active {
+  background: rgba(0,0,0,0.08);
+  color: rgba(0,0,0,0.9);
+}
+
 /* ─── 4. DEMO CONTROLS BAR ────────────────────────────────────────────────── */
 /* ═══════════════════════════════════════════════════════════════════════
    FLOATING NAV BAR LOGIC
@@ -1196,41 +1245,50 @@ body {
 .sf-body {
   flex: 1;
   overflow-y: auto;
-  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+  background: linear-gradient(160deg, #0a0e1a 0%, #0d1529 50%, #0f1f3d 100%);
+}
+[data-theme="light"] .sf-body {
+  background: linear-gradient(160deg, #e8f0fe 0%, #dbeafe 50%, #eff6ff 100%);
 }
 
-.sf-greeting {
-  font-size: 24px;
-  font-weight: 700;
-  color: var(--text-primary);
-  font-family: var(--font-display);
-  margin-bottom: 4px;
-}
-.sf-prompt {
-  font-size: 14px;
-  color: var(--text-secondary);
-  margin-bottom: 20px;
-}
-.sf-section-label {
-  font-size: 11px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: var(--text-muted);
-  margin-bottom: 12px;
-  padding-bottom: 6px;
-  border-bottom: 1px solid var(--border-subtle);
+/* SF body cards-mount — match new-tab layout */
+.sf-body .cards-mount {
+  padding: 0 32px 32px;
+  max-width: 1200px;
+  margin: 0 auto;
+  width: 100%;
+  box-sizing: border-box;
+  grid-template-columns: repeat(auto-fill, minmax(310px, 1fr));
 }
 
-#chrome-salesforce .proactive-card {
-  border-radius: 8px;
-  border: 1px solid var(--border-default);
-  box-shadow: var(--shadow-sm);
+/* SF body cards — use base card style (not SF-specific white/border) */
+.sf-body .proactive-card {
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-subtle);
+  border-left: 3px solid transparent;
+  box-shadow: none;
 }
-[data-theme="light"] #chrome-salesforce .proactive-card {
-  background: #fff;
-  border-color: #e0e5ee;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+[data-theme="light"] .sf-body .proactive-card {
+  background: var(--bg-card);
+  border-color: var(--border-subtle);
+  box-shadow: none;
+}
+
+/* SF-specific bottom search area — pill style matching new-tab */
+.sf-search-area { padding: 8px 24px 24px; flex-shrink: 0; }
+.sf-search-area .search-input-wrap {
+  max-width: 640px;
+  margin: 0 auto;
+  border-radius: 28px;
+  background: rgba(255,255,255,0.06);
+  border-color: rgba(255,255,255,0.12);
+}
+[data-theme="light"] .sf-search-area .search-input-wrap {
+  background: rgba(0,0,0,0.04);
+  border-color: rgba(0,0,0,0.12);
 }
 
 /* ─── 11. CHROME 3: MICROSOFT TEAMS ──────────────────────────────────────── */

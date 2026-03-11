@@ -20,6 +20,15 @@
 <body>
 
   <!-- ═══════════════════════════════════════════════════════════════════════
+       GLOBAL MODE TOGGLE  (fixed top center — Ask Astro / Astro Cowork)
+       ═══════════════════════════════════════════════════════════════════════ -->
+  <div id="global-mode-toggle">
+    <button class="global-mode-btn active" data-mode="ask">Ask Astro</button>
+    <button class="global-mode-btn" data-mode="cowork">✦ Astro Cowork</button>
+  </div>
+
+
+  <!-- ═══════════════════════════════════════════════════════════════════════
        DEMO CONTROLS BAR  (fixed floating pill, toggle with ⌘K)
        ═══════════════════════════════════════════════════════════════════════ -->
   <nav id="demo-controls">
@@ -31,7 +40,6 @@
       <option value="mac-app">Mac Desktop App</option>
       <option value="claude-ext">Claude Extension</option>
       <option value="chatgpt-ext">ChatGPT Extension</option>
-      <option value="cowork">✦ Astro Cowork</option>
       <option value="iphone">iPhone App</option>
     </select>
 
@@ -94,10 +102,6 @@
       <div class="search-input-wrap">
         <i class="ph ph-magnifying-glass search-icon"></i>
         <input type="text" class="proactive-search-input" placeholder="Ask anything about your workspace…" data-chrome="new-tab">
-        <div class="ask-mode-toggle">
-          <button class="ask-mode-opt active" data-mode="ask">Ask Astro</button>
-          <button class="ask-mode-opt cowork-mode" data-mode="cowork">✦ Cowork</button>
-        </div>
       </div>
     </div>
 
@@ -129,14 +133,6 @@
     <div class="sf-main-area">
       <header class="sf-top-bar">
         <span class="sf-app-name">Sales Cloud</span>
-        <div class="sf-search-bar">
-          <i class="ph ph-magnifying-glass"></i>
-          <span>Search Salesforce…</span>
-        </div>
-        <div class="sf-ask-mode-btn sf-ask-trigger">
-          <button class="sf-ask-mode-opt active" data-mode="ask">✦ Ask Astro</button>
-          <button class="sf-ask-mode-opt cowork-opt" data-mode="cowork">✦ Astro Cowork</button>
-        </div>
         <div style="margin-left:auto;display:flex;align-items:center;gap:12px;">
           <i class="ph ph-bell" style="color:rgba(255,255,255,0.7);font-size:18px;cursor:pointer;"></i>
           <i class="ph ph-question" style="color:rgba(255,255,255,0.7);font-size:18px;cursor:pointer;"></i>
@@ -144,12 +140,20 @@
         </div>
       </header>
 
-      <!-- Default state: greeting + cards + inline search bar -->
+      <!-- Default state: new-tab style layout (greeting + cards + search bar) -->
       <main class="sf-body">
-        <h1 class="sf-greeting">Hi Carmen, What needs your attention?</h1>
-        <p class="sf-prompt">Here's what Astro surfaced for you today across all your connected sources.</p>
-        <div class="sf-section-label">Recommendations</div>
+        <div class="new-tab-hero">
+          <div class="new-tab-greeting" id="sf-greeting"></div>
+        </div>
         <div class="cards-mount"></div>
+        <div class="search-bar-area sf-search-area">
+          <div class="search-input-wrap">
+            <i class="ph ph-magnifying-glass search-icon"></i>
+            <input type="text" class="proactive-search-input"
+                   placeholder="Ask anything about your workspace…"
+                   data-chrome="salesforce">
+          </div>
+        </div>
       </main>
 
       <!-- Ask Astro full-page view (toggled on by .sf-ask-mode class) -->
@@ -162,10 +166,6 @@
           <img src="astro.jpeg" class="sf-ask-logo" alt="Astro" onerror="this.style.display='none'">
           <h1 class="sf-ask-heading">Good afternoon, Carmen.</h1>
           <p class="sf-ask-sub">What's on your mind today?</p>
-          <div class="sf-ask-mode-inner">
-            <button class="sf-ask-mode-inner-opt active" data-mode="ask">Ask Astro</button>
-            <button class="sf-ask-mode-inner-opt cowork-inner" data-mode="cowork">✦ Astro Cowork</button>
-          </div>
           <div class="sf-ask-input-wrap">
             <i class="ph ph-sparkle" style="color:#0176d3;font-size:18px;flex-shrink:0;"></i>
             <input type="text" id="sf-ask-input" class="proactive-search-input sf-ask-search-input"
@@ -351,10 +351,6 @@
           <div class="search-input-wrap">
             <i class="ph ph-magnifying-glass search-icon"></i>
             <input type="text" class="proactive-search-input" placeholder="Search your workspace…" data-chrome="mac-app">
-            <div class="ask-mode-toggle">
-              <button class="ask-mode-opt active" data-mode="ask">Ask Astro</button>
-              <button class="ask-mode-opt cowork-mode" data-mode="cowork">✦ Cowork</button>
-            </div>
           </div>
         </div>
       </main>
@@ -407,10 +403,6 @@
         <div class="search-input-wrap">
           <span class="claude-cmd-icon">✦</span>
           <input type="text" class="proactive-search-input" placeholder="Ask Claude about your work…" data-chrome="claude-ext">
-          <div class="ask-mode-toggle">
-            <button class="ask-mode-opt active" data-mode="ask">Ask Astro</button>
-            <button class="ask-mode-opt cowork-mode" data-mode="cowork">✦ Cowork</button>
-          </div>
         </div>
       </div>
     </main>
@@ -471,10 +463,6 @@
         <div class="search-input-wrap">
           <i class="ph ph-sparkle" style="color:#10a37f;flex-shrink:0;font-size:16px;"></i>
           <input type="text" class="proactive-search-input" placeholder="Message Astro…" data-chrome="chatgpt-ext">
-          <div class="ask-mode-toggle">
-            <button class="ask-mode-opt active" data-mode="ask">Ask Astro</button>
-            <button class="ask-mode-opt cowork-mode" data-mode="cowork">✦ Cowork</button>
-          </div>
         </div>
       </div>
     </main>

@@ -121,6 +121,13 @@ window.Cowork = (function () {
     window.App.switchChrome(chromeKey);
     const sel = document.getElementById('ctrl-chrome-select');
     if (sel) sel.value = chromeKey;
+    // switchChrome already syncs the global toggle via app.js
+  }
+
+  function _syncGlobalToggle(mode) {
+    document.querySelectorAll('#global-mode-toggle .global-mode-btn').forEach(b => {
+      b.classList.toggle('active', b.dataset.mode === mode);
+    });
   }
 
   // ─── BIND EVENTS ───────────────────────────────────────────────────────────
@@ -197,66 +204,18 @@ window.Cowork = (function () {
       });
     });
 
-    // ── 2-mode Ask/Cowork toggle buttons (all other chromes) ────
+    // ── Global mode toggle (Ask Astro / Astro Cowork) ────
     document.addEventListener('click', e => {
-      const opt = e.target.closest('.ask-mode-opt, .sf-ask-mode-opt');
-      if (!opt) return;
-      const wrap = opt.closest('.ask-mode-toggle, .sf-ask-mode-btn');
-      if (!wrap) return;
-
-      wrap.querySelectorAll('.ask-mode-opt, .sf-ask-mode-opt').forEach(o => o.classList.remove('active'));
-      opt.classList.add('active');
-
-      const mode = opt.dataset.mode;
-
+      const btn = e.target.closest('#global-mode-toggle .global-mode-btn');
+      if (!btn) return;
+      const mode = btn.dataset.mode;
       if (mode === 'cowork') {
-        // Store current chrome before switching
         const sel = document.getElementById('ctrl-chrome-select');
         _previousChrome = sel?.value || 'new-tab';
         _switchTo('cowork');
-        return;
-      }
-
-      // mode === 'ask' — update placeholder on nearby input
-      const chrome = opt.closest('.chrome-wrapper');
-      const input = chrome?.querySelector('.proactive-search-input, .sf-ask-search-input');
-      if (input) {
-        delete input.dataset.mode;
-        input.placeholder = input.dataset.originalPlaceholder || input.placeholder;
-      }
-
-      // SF top bar: enter ask-mode
-      if (opt.closest('.sf-top-bar')) {
-        const sfChrome = document.getElementById('chrome-salesforce');
-        sfChrome?.classList.add('sf-ask-mode');
-        const sfInput = document.getElementById('sf-ask-input');
-        if (sfInput) {
-          sfInput.focus();
-          delete sfInput.dataset.mode;
-          sfInput.placeholder = 'Ask Astro anything — deals, contacts, docs, cases…';
-          document.querySelectorAll('.sf-ask-mode-inner-opt').forEach(o => {
-            o.classList.toggle('active', o.dataset.mode === 'ask');
-          });
-        }
-      }
-    });
-
-    // ── Inner SF ask-view mode toggle ────
-    document.addEventListener('click', e => {
-      const opt = e.target.closest('.sf-ask-mode-inner-opt');
-      if (!opt) return;
-      document.querySelectorAll('.sf-ask-mode-inner-opt').forEach(o => o.classList.remove('active'));
-      opt.classList.add('active');
-      const sfInput = document.getElementById('sf-ask-input');
-      if (!sfInput) return;
-      if (opt.dataset.mode === 'cowork') {
-        const sel = document.getElementById('ctrl-chrome-select');
-        _previousChrome = sel?.value || 'new-tab';
-        sfInput.dataset.mode = 'cowork';
-        sfInput.placeholder  = 'Describe your goal — Astro will coordinate the right agents…';
       } else {
-        delete sfInput.dataset.mode;
-        sfInput.placeholder = 'Ask Astro anything — deals, contacts, docs, cases…';
+        const target = _previousChrome || 'new-tab';
+        _switchTo(target);
       }
     });
 
