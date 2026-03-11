@@ -33,6 +33,22 @@
        ═══════════════════════════════════════════════════════════════════════ -->
   <nav id="demo-controls">
     <span class="ctrl-label">Chrome</span>
+    <span class="ctrl-label" style="margin-left:8px;">Persona</span>
+    <select id="ctrl-persona-select" class="ctrl-select">
+      <option value="sales-banking">Carmen · AE · Banking</option>
+      <option value="sales-healthcare">Jordan · Regional Dir · Healthcare</option>
+      <option value="sales-automotive">Tyler · Fleet Sales · Automotive</option>
+      <option value="service-banking">Priya · CSM · Banking</option>
+      <option value="service-healthcare">Aisha · Patient Coord · Healthcare</option>
+      <option value="service-automotive">Marcus · Service Advisor · Automotive</option>
+      <option value="marketing-banking">Sofia · Digital Mktg · Banking</option>
+      <option value="marketing-healthcare">Darius · Growth Mktg · Healthcare</option>
+      <option value="marketing-automotive">Natasha · Campaign Mgr · Automotive</option>
+    </select>
+
+    <div class="ctrl-divider"></div>
+
+    <span class="ctrl-label">Chrome</span>
     <select id="ctrl-chrome-select" class="ctrl-select">
       <option value="new-tab">Browser New Tab</option>
       <option value="salesforce">Salesforce — Ask Astro</option>
@@ -96,7 +112,8 @@
       <div class="new-tab-greeting" id="new-tab-greeting"></div>
     </div>
 
-    <div class="cards-mount"></div>
+    <div class="morning-digest-mount"></div>
+    <div class="cards-mount" data-feed="main"></div>
 
     <div class="search-bar-area nt-search-area">
       <div class="search-input-wrap">
@@ -145,7 +162,8 @@
         <div class="new-tab-hero">
           <div class="new-tab-greeting" id="sf-greeting"></div>
         </div>
-        <div class="cards-mount"></div>
+        <div class="morning-digest-mount"></div>
+        <div class="cards-mount" data-feed="main"></div>
         <div class="search-bar-area sf-search-area">
           <div class="search-input-wrap">
             <i class="ph ph-magnifying-glass search-icon"></i>

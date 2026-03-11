@@ -17,6 +17,8 @@ const CHROME_IDS = {
 };
 
 let _currentChrome = 'new-tab';
+let _currentPersona = 'sales-banking';
+let _lateCardTimer  = null;
 let _aiCards = [];          // cards added via Claude API
 let _searchResultCards = []; // cards injected by search handler
 let _searchHandler = null;   // hookable external search backend
@@ -35,6 +37,7 @@ window.App = {
 // ─── INIT ─────────────────────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', () => {
   _initClock();
+  _initPersonaSelector();
   _initGreeting();
   _initControls();
   _initPanelClose();
@@ -58,24 +61,73 @@ function _initClock() {
   setInterval(update, 1000);
 }
 
+// ─── PERSONA SELECTOR ────────────────────────────────────────────────────────
+function _initPersonaSelector() {
+  const sel = document.getElementById('ctrl-persona-select');
+  if (!sel) return;
+  sel.addEventListener('change', e => {
+    _currentPersona = e.target.value;
+    _initGreeting();
+    _applyPersonaToChrome();
+    // Re-render current chrome's feed
+    const chromeId = CHROME_IDS[_currentChrome];
+    const target   = document.getElementById(chromeId);
+    const mount    = target?.querySelector('.cards-mount[data-feed="main"]');
+    if (mount) {
+      _showSkeletons(mount);
+      clearTimeout(_lateCardTimer);
+      setTimeout(() => renderCards(mount), 250);
+    }
+  });
+}
+
+function _getPersona() {
+  return (window.DATA.personas || {})[_currentPersona] || null;
+}
+
+function _getPersonaCards() {
+  const p = _getPersona();
+  if (!p || !p.cards) return window.DATA.cards; // sales-banking default
+  return p.cards;
+}
+
+function _applyPersonaToChrome() {
+  const p = _getPersona();
+  if (!p) return;
+  // Update SF app name label
+  const sfAppName = document.querySelector('.sf-app-name');
+  if (sfAppName) sfAppName.textContent = p.sfAppName || 'Sales Cloud';
+  // Update SF avatar
+  const sfAvatar = document.querySelector('.sf-top-bar .avatar-circle');
+  if (sfAvatar) { sfAvatar.textContent = p.user.initials; sfAvatar.style.background = p.user.color; }
+}
+
 // ─── GREETING ────────────────────────────────────────────────────────────────
 function _initGreeting() {
   const hour  = new Date().getHours();
   const parts = hour < 12 ? 'morning' : hour < 17 ? 'afternoon' : 'evening';
-  const greeting = `Good ${parts}, Carmen.`;
+  const p     = _getPersona();
+  const name  = p ? p.user.name.split(' ')[0] : 'Carmen';
+  const cards = _getPersonaCards();
+  const count = cards.length;
+  const greeting  = `Good ${parts}, ${name}.`;
+  const subline   = `Astro surfaced ${count} things that need your attention today.`;
 
   const ntEl  = document.getElementById('new-tab-greeting');
+  const sfEl  = document.getElementById('sf-greeting');
   const macEl = document.getElementById('mac-greeting');
   const cwEl  = document.getElementById('cw-greeting');
-  const sfEl  = document.getElementById('sf-greeting');
-  if (ntEl)  ntEl.textContent = greeting;
-  if (macEl) macEl.textContent = greeting;
-  if (cwEl)  cwEl.textContent = greeting;
-  if (sfEl)  sfEl.textContent = greeting;
 
-  // SF Ask Astro hero greeting
+  [ntEl, sfEl].forEach(el => {
+    if (!el) return;
+    el.innerHTML = `<span class="greeting-line">${greeting}</span><span class="greeting-sub">${subline}</span>`;
+  });
+  if (macEl) macEl.textContent = greeting;
+  if (cwEl)  cwEl.textContent  = greeting;
+
+  // SF Ask hero
   const sfHero = document.querySelector('.sf-ask-heading');
-  if (sfHero) sfHero.textContent = `Good ${parts}, Carmen.`;
+  if (sfHero) sfHero.textContent = greeting;
 }
 
 // ─── CONTROLS ────────────────────────────────────────────────────────────────
@@ -320,14 +372,202 @@ function _showSkeletons(mount) {
 // ─── CARD RENDERING ───────────────────────────────────────────────────────────
 function renderCards(mountEl) {
   mountEl.innerHTML = '';
-  const allCards = [..._searchResultCards, ...window.DATA.cards, ..._aiCards];
+
+  // Render morning digest above the grid (main feed only)
+  if (mountEl.dataset.feed === 'main') {
+    const digestMount = mountEl.previousElementSibling;
+    if (digestMount && digestMount.classList.contains('morning-digest-mount')) {
+      const p = _getPersona();
+      const digest = p?.morningDigest || null;
+      _renderMorningDigest(digestMount, digest);
+    }
+  }
+
+  const personaCards = _getPersonaCards();
+  const allCards = [..._searchResultCards, ...personaCards, ..._aiCards];
   allCards.forEach(card => mountEl.appendChild(_buildCard(card)));
+
+  // Ensure "Completed today" section exists at bottom
+  _ensureCompletedSection(mountEl);
+
+  // Schedule late card arrival on main feed (simulates real-time update)
+  if (mountEl.dataset.feed === 'main') {
+    clearTimeout(_lateCardTimer);
+    _lateCardTimer = setTimeout(() => _arriveLateCard(mountEl), 11000);
+  }
 }
 
+// ─── MORNING DIGEST ───────────────────────────────────────────────────────────
+function _renderMorningDigest(mountEl, digestData) {
+  mountEl.innerHTML = '';
+  if (!digestData) return;
+
+  const SECTION_ICONS = {
+    calendar:    'ph-calendar',
+    commitments: 'ph-clock-countdown',
+    blockers:    'ph-chat-dots',
+    cowork:      'ph-sparkle',
+    focus:       'ph-leaf'
+  };
+
+  const sectionsHtml = digestData.sections.map(sec => {
+    const icon = SECTION_ICONS[sec.type] || 'ph-list';
+    let itemsHtml = '';
+
+    if (sec.type === 'calendar') {
+      itemsHtml = sec.items.map(item => `
+        <div class="md-cal-item" style="border-left-color:${item.color || 'var(--accent)'}">
+          <div class="md-cal-time">${item.time}</div>
+          <div class="md-cal-text">
+            <div class="md-cal-title">${item.title}</div>
+            ${item.context ? `<div class="md-cal-context">${item.context}</div>` : ''}
+          </div>
+        </div>`).join('');
+    } else if (sec.type === 'commitments' || sec.type === 'blockers') {
+      const iconClass = sec.type === 'blockers' ? 'blocker' : '';
+      itemsHtml = sec.items.map(item => `
+        <div class="md-commit-item">
+          <i class="ph ${sec.type === 'blockers' ? 'ph-chat-dots' : 'ph-clock-countdown'} md-commit-icon ${item.overdue ? 'overdue' : ''} ${iconClass}"></i>
+          <div class="md-commit-text">
+            <div class="md-commit-title">${item.text}</div>
+            ${item.source ? `<div class="md-commit-source">${item.source}</div>` : ''}
+          </div>
+        </div>`).join('');
+    } else if (sec.type === 'cowork') {
+      itemsHtml = sec.items.map(item => `
+        <div class="md-cowork-item">
+          <i class="ph ph-sparkle md-cowork-icon"></i>
+          <div class="md-cowork-text">
+            <div class="md-cowork-title">${item.title || item.text}</div>
+            ${item.detail || item.source ? `<div class="md-cowork-detail">${item.detail || item.source}</div>` : ''}
+          </div>
+        </div>`).join('');
+    } else if (sec.type === 'focus') {
+      itemsHtml = sec.items.map(item => `
+        <div class="md-focus-item">
+          <i class="ph ph-leaf md-focus-icon"></i>
+          <div class="md-focus-text">${item.text || item.title}</div>
+        </div>`).join('');
+    }
+
+    return `
+      <div class="md-section">
+        <div class="md-section-title"><i class="ph ${icon}"></i>${sec.title}</div>
+        <div class="md-items">${itemsHtml}</div>
+      </div>`;
+  }).join('');
+
+  const digest = document.createElement('div');
+  digest.className = 'morning-digest';
+  digest.innerHTML = `
+    <div class="md-header">
+      <div class="md-header-icon"><i class="ph ph-sun-horizon"></i></div>
+      <div class="md-header-text">
+        <div class="md-header-title">Morning Digest</div>
+        <div class="md-header-date">${digestData.date || ''}</div>
+        <div class="md-header-summary">${digestData.summary || ''}</div>
+      </div>
+      <i class="ph ph-caret-right md-chevron"></i>
+    </div>
+    <div class="md-body">
+      <div class="md-sections">${sectionsHtml}</div>
+    </div>`;
+
+  digest.querySelector('.md-header').addEventListener('click', () => {
+    digest.classList.toggle('open');
+  });
+
+  mountEl.appendChild(digest);
+}
+
+// ─── COMPLETED SECTION ────────────────────────────────────────────────────────
+function _ensureCompletedSection(mountEl) {
+  let section = mountEl.querySelector('.completed-section');
+  if (!section) {
+    section = document.createElement('div');
+    section.className = 'completed-section';
+    section.innerHTML = `
+      <div class="completed-section-header">
+        <i class="ph ph-caret-right"></i>
+        Completed today
+        <span class="completed-count" style="color:var(--text-muted);font-weight:400;margin-left:2px">(0)</span>
+      </div>
+      <div class="completed-section-items"></div>`;
+
+    section.querySelector('.completed-section-header').addEventListener('click', () => {
+      section.classList.toggle('open');
+    });
+
+    mountEl.appendChild(section);
+  }
+  return section;
+}
+
+// ─── LATE CARD ARRIVAL ────────────────────────────────────────────────────────
+function _arriveLateCard(mountEl) {
+  if (!document.contains(mountEl)) return;
+  const p = _getPersona();
+  if (!p?.lateCard) return;
+
+  const card = p.lateCard;
+
+  // Show banner first
+  _showNewUpdateBanner(mountEl, card);
+
+  // Insert new card at top after short delay
+  setTimeout(() => {
+    if (!document.contains(mountEl)) return;
+    const cardEl = _buildCard(card);
+    cardEl.classList.add('card-new');
+
+    // Add "NEW" badge
+    const badge = document.createElement('div');
+    badge.className = 'card-new-badge';
+    badge.textContent = 'NEW';
+    cardEl.style.position = 'relative';
+    cardEl.appendChild(badge);
+
+    // Remove badge after 6s
+    setTimeout(() => badge.remove(), 6000);
+
+    mountEl.prepend(cardEl);
+  }, 600);
+}
+
+function _showNewUpdateBanner(mountEl, card) {
+  // Remove any existing banner
+  mountEl.querySelector('.new-update-banner')?.remove();
+
+  const banner = document.createElement('div');
+  banner.className = 'new-update-banner';
+  banner.innerHTML = `
+    <i class="ph ph-bell-ringing"></i>
+    <span><strong>1 new update from Astro</strong> — ${card.title}</span>
+    <button class="banner-dismiss" aria-label="Dismiss">×</button>`;
+
+  banner.querySelector('.banner-dismiss').addEventListener('click', () => banner.remove());
+
+  mountEl.prepend(banner);
+
+  // Auto-dismiss after 8s
+  setTimeout(() => {
+    if (banner.isConnected) {
+      banner.style.transition = 'opacity 0.4s';
+      banner.style.opacity = '0';
+      setTimeout(() => banner.remove(), 420);
+    }
+  }, 8000);
+}
+
+// ─── CARD RENDERING ───────────────────────────────────────────────────────────
 function _buildCard(card) {
   const el = document.createElement('div');
   el.className = `proactive-card urgency-${card.urgency}`;
   el.dataset.cardId = card.id;
+
+  const whyHtml = card.triggeredBecause
+    ? `<div class="card-why"><i class="ph ph-lightning"></i>${card.triggeredBecause}</div>`
+    : '';
 
   el.innerHTML = `
     <div class="card-header">
@@ -338,6 +578,7 @@ function _buildCard(card) {
       <span class="card-label">${card.label}</span>
       <button class="card-dismiss" aria-label="Dismiss card">×</button>
     </div>
+    ${whyHtml}
     <div class="card-body">
       <div class="card-title">${card.title}</div>
       <div class="card-subtitle">${card.subtitle}</div>
@@ -358,13 +599,50 @@ function _buildCard(card) {
       <span class="card-timestamp">${card.timestamp}</span>
     </div>`;
 
-  // Dismiss button
+  // Dismiss button → collapse to done row, move to completed section
   el.querySelector('.card-dismiss').addEventListener('click', e => {
     e.stopPropagation();
-    el.style.transition = 'opacity 0.3s, transform 0.3s';
+    const mountEl  = el.closest('.cards-mount');
+    const titleText = card.title;
+
+    // Animate out
+    el.style.transition = 'opacity 0.25s, transform 0.25s';
     el.style.opacity    = '0';
-    el.style.transform  = 'translateX(16px) scale(0.96)';
-    setTimeout(() => el.remove(), 320);
+    el.style.transform  = 'scale(0.95)';
+
+    setTimeout(() => {
+      el.remove();
+      if (!mountEl) return;
+
+      // Build done row
+      const doneRow = document.createElement('div');
+      doneRow.className = 'card-done-row';
+      doneRow.innerHTML = `
+        <i class="ph ph-check-circle"></i>
+        <span class="done-title">${titleText}</span>
+        <button class="done-undo">Undo</button>`;
+
+      // Undo re-inserts the original card
+      doneRow.querySelector('.done-undo').addEventListener('click', () => {
+        const sec = doneRow.closest('.completed-section');
+        const items = sec?.querySelector('.completed-section-items');
+        doneRow.remove();
+        if (items) {
+          const countEl = sec.querySelector('.completed-count');
+          if (countEl) countEl.textContent = `(${items.children.length})`;
+        }
+        mountEl.prepend(_buildCard(card));
+      });
+
+      // Move done row into completed section
+      const section = _ensureCompletedSection(mountEl);
+      const items   = section.querySelector('.completed-section-items');
+      items.prepend(doneRow);
+      section.classList.add('open');
+      // Update count badge
+      const countEl = section.querySelector('.completed-count');
+      if (countEl) countEl.textContent = `(${items.children.length})`;
+    }, 280);
   });
 
   // CTA buttons
