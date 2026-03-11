@@ -25,104 +25,14 @@ window.DATA = {
       sourceBadgeColor: '#0176d3',
       sourceIcon: 'ph-calendar-blank',
       title: 'Q2 Strategy Review',
-      subtitle: 'Conference Room A &nbsp;·&nbsp; Starts in 14 min',
-      body: 'Marcus Thompson, Keisha Williams, and David Chen attending. 3 open action items from your last sync. Q2 Budget Reforecast trending — may come up.',
+      subtitle: 'Conference Room A &nbsp;·&nbsp; Starts at {{T+14}}',
+      body: 'Marcus Thompson, Keisha Williams, and David Chen attending. 3 open action items from your last sync. Q2 Budget Reforecast trending — 7 teammates read it this morning.',
       triggeredBecause: 'Starts in 14 min · 3 open action items unresolved from last sync',
       ctas: [
         { label: 'View Meeting Prep', panelId: 'meeting-prep' },
         { label: 'Join Meeting', action: 'open-url', url: 'https://calendar.google.com/calendar/r/day' }
       ],
-      timestamp: '2:00 PM today'
-    },
-    {
-      id: 'collab-1',
-      type: 'top-collaborators',
-      label: 'Top Collaborators',
-      urgency: 'medium',
-      source: 'Google Docs',
-      sourceBadgeColor: '#4285f4',
-      sourceIcon: 'ph-google-logo',
-      title: 'Keisha Williams updated CRA Assessment',
-      subtitle: 'Added 3 new sections &nbsp;·&nbsp; 23 min ago',
-      body: '"CRA Community Reinvestment Assessment 2026" now includes Fair Lending Analysis, HMDA Data Review, and Branch Access sections — all relevant to your upcoming FDIC examination.',
-      triggeredBecause: 'Keisha updated a doc you co-own · 3 sections added since you last opened it',
-      ctas: [
-        { label: 'Review Changes', panelId: 'cra-collaborators' },
-        { label: 'Open in Docs', action: 'open-url', url: 'https://docs.google.com/document/d/1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgVE2upms/edit' }
-      ],
-      timestamp: '1:23 PM'
-    },
-    {
-      id: 'deal-1',
-      type: 'deal-momentum',
-      label: 'Deal/Case Momentum',
-      urgency: 'high',
-      source: 'Salesforce',
-      sourceBadgeColor: '#0176d3',
-      sourceIcon: 'ph-cloud',
-      title: 'Beacon Capital Deal Gone Quiet',
-      subtitle: '$2.4M SMB Lending Program &nbsp;·&nbsp; No activity in 14 days',
-      body: 'Last touchpoint: Feb 23 email from David Chen — no response. At 50% probability and closing Apr 30. Competitor outreach from First Citizens Bank detected.',
-      triggeredBecause: 'No CRM activity in 14 days · competitor visited their office last week',
-      ctas: [
-        { label: 'View Opportunity', panelId: 'beacon-deal' },
-        { label: 'Draft Follow-Up', panelId: 'beacon-deal' }
-      ],
-      timestamp: 'At risk'
-    },
-    {
-      id: 'drift-1',
-      type: 'knowledge-drift',
-      label: 'Knowledge Drift',
-      urgency: 'medium',
-      source: 'Compliance',
-      sourceBadgeColor: '#7c3aed',
-      sourceIcon: 'ph-shield-check',
-      title: 'FDIC Examination Guidelines Updated',
-      subtitle: 'Section 3.2 Capital Requirements revised &nbsp;·&nbsp; 2 days ago',
-      body: 'A document you reference regularly was updated by the FDIC. You last opened it 3 weeks ago. New capital ratio threshold (8%) and supplemental CDFI report due April 30.',
-      triggeredBecause: 'A regulation you reference was revised · new capital ratio affects your Q3 plan',
-      ctas: [
-        { label: 'See What Changed', panelId: 'fdic-diff' },
-        { label: 'Open Document', action: 'open-url', url: 'https://www.fdic.gov/regulations/examinations/supervisory/insights/' }
-      ],
-      timestamp: '2 days ago'
-    },
-    {
-      id: 'trending-1',
-      type: 'trending',
-      label: 'Trending',
-      urgency: 'low',
-      source: 'Activity',
-      sourceBadgeColor: '#059669',
-      sourceIcon: 'ph-chart-line-up',
-      title: '7 teammates viewed this today',
-      subtitle: '"Q2 Budget Reforecast" &nbsp;·&nbsp; Trending internally since 9 AM',
-      body: 'Marcus Thompson, David Chen, Amara Osei and 4 others opened this document this morning. Likely relevant to your 2 PM Q2 Strategy Review.',
-      triggeredBecause: '7 of your close colleagues read this today · it\'s on your 2 PM agenda',
-      ctas: [
-        { label: 'Open Document', panelId: 'trending-doc' },
-        { label: 'See Readers', panelId: 'trending-doc' }
-      ],
-      timestamp: '1:30 PM'
-    },
-    {
-      id: 'morning-1',
-      type: 'morning-brief',
-      label: 'Morning Brief',
-      urgency: 'medium',
-      source: 'Multiple Sources',
-      sourceBadgeColor: '#d97706',
-      sourceIcon: 'ph-stack',
-      title: 'Monday Brief · March 9',
-      subtitle: '3 priority emails &nbsp;·&nbsp; 2 meetings today &nbsp;·&nbsp; 1 deal at risk',
-      body: 'FDIC response deadline March 15. Beacon Capital follow-up overdue 14 days. Amara flagged 3 fintech partnership inquiries for your review.',
-      triggeredBecause: 'Daily intelligence compiled from calendar, email, CRM, and compliance systems',
-      ctas: [
-        { label: 'Open Morning Digest', action: 'open-digest' },
-        { label: 'Open Inbox', action: 'open-url', url: 'https://mail.google.com/mail/u/0/#inbox' }
-      ],
-      timestamp: '9:00 AM'
+      timestamp: '{{T+14}}'
     }
   ],
 
@@ -723,25 +633,29 @@ Sales Director, OneUnited Bank`
         timestamp: 'Just now'
       },
       morningDigest: {
-        date: 'Monday, Mar 9',
-        summary: '2 meetings · 2 forgotten commitments · Compliance Cowork ran overnight · 1 doc awaiting your reply',
+        summary: '2 meetings · 2 forgotten commitments · 2 cowork jobs ran overnight · 1 doc awaiting your reply',
         sections: [
           { type: 'calendar', title: "Today's Calendar", items: [
-            { time: '2:00 PM', title: 'Q2 Strategy Review', context: 'Deal at risk flagged · 3 open action items', color: '#0176d3' },
-            { time: '4:30 PM', title: 'Board Prep — Q1 Review', context: 'Keisha needs FDIC response before this', color: '#7c3aed' }
+            { timeOffset: 14, title: 'Q2 Strategy Review', context: 'Deal at risk flagged · 3 open action items', color: '#0176d3' },
+            { timeOffset: 150, title: 'Board Prep — Q1 Review', context: 'Keisha needs FDIC response before this', color: '#7c3aed' }
+          ]},
+          { type: 'signals', title: 'Signals & Activity', items: [
+            { icon: 'ph-user-edit', text: 'Keisha Williams added 3 sections to "CRA Community Reinvestment Assessment" — Fair Lending Analysis, HMDA Data Review, and Branch Access · all relevant to your FDIC exam', meta: '{{T-23m}}' },
+            { icon: 'ph-trend-up', text: '"Q2 Budget Reforecast" trending among your team — Marcus Thompson, David Chen, Amara Osei and 4 others opened it this morning · likely on your 2 PM agenda', meta: 'Since 9 AM today' }
           ]},
           { type: 'commitments', title: 'Forgotten Commitments', items: [
             { text: 'You told David Chen: "I\'ll send Beacon Capital the final terms by Friday"', source: 'Email · Feb 20', overdue: true },
             { text: 'You told Amara: "I\'ll review the Plaid brief tonight"', source: 'Teams · Yesterday', overdue: false }
           ]},
           { type: 'blockers', title: 'Awaiting Your Reply', items: [
-            { text: 'Keisha Williams commented on CRA Assessment Section 4 — waiting on your feedback', source: '1:23 PM today' }
+            { text: 'Keisha Williams commented on CRA Assessment Section 4 — waiting on your feedback', source: '{{T-23m}}' }
           ]},
           { type: 'cowork', title: 'Overnight Cowork Results', items: [
-            { label: 'Q1 Compliance Risk Summary', note: 'Ran at 11:00 PM · 3 risks flagged · 2 FDIC deadlines at risk · Report ready' }
+            { label: 'Q1 Compliance Risk Summary', note: 'Ran last night · FDIC Section 3.2 updated: capital ratio 6%→8% · 2 deadlines flagged (Mar 15 + Apr 30) · Report ready to share' },
+            { label: 'Follow-up with leads silent 2+ weeks', note: 'Ran automatically · Beacon Capital: 14 days no CRM activity · First Citizens Bank competitor contact detected · Personalized draft email ready for your review' }
           ]},
           { type: 'focus', title: 'Suggested Focus Window', items: [
-            { time: '10:00 AM – 12:00 PM', note: '2 hrs clear — ideal for Beacon Capital follow-up and FDIC response draft' }
+            { text: '{{T+30}} – {{T+150}} · 2 hrs clear — ideal for Beacon Capital follow-up email and FDIC response draft' }
           ]}
         ]
       }
@@ -758,61 +672,11 @@ Sales Director, OneUnited Bank`
           id: 'sh-meet', type: 'upcoming-meeting', label: 'Upcoming Meeting', urgency: 'high',
           source: 'Calendar', sourceBadgeColor: '#0176d3', sourceIcon: 'ph-calendar-blank',
           title: 'Renewal Call — Memorial Hospital',
-          subtitle: 'Video Call &nbsp;·&nbsp; Starts in 22 min',
+          subtitle: 'Video Call &nbsp;·&nbsp; Starts at {{T+22}}',
           body: 'Dr. Priya Anand (CPO) and procurement lead attending. $340K annual contract up for renewal. Competitor Medtronic quoted 8% below current rate — prepare value defense.',
           triggeredBecause: 'Renewal call in 22 min · competitor undercut your price by 8% last week',
           ctas: [{ label: 'View Account Prep', action: 'toast', message: 'Opening Memorial Hospital account prep…' }, { label: 'Join Call', action: 'open-url', url: 'https://calendar.google.com' }],
-          timestamp: '11:00 AM today'
-        },
-        {
-          id: 'sh-deal', type: 'deal-momentum', label: 'Deal/Case Momentum', urgency: 'high',
-          source: 'Salesforce', sourceBadgeColor: '#0176d3', sourceIcon: 'ph-cloud',
-          title: 'Stanford Health Care — Surgical Suite',
-          subtitle: '$1.2M capital equipment &nbsp;·&nbsp; No activity in 18 days',
-          body: 'Last touchpoint was a product demo Feb 19. Stryker was spotted at Stanford\'s procurement office last week. Close date is April 15 — window narrowing.',
-          triggeredBecause: 'No activity 18 days · competitor detected at prospect location',
-          ctas: [{ label: 'View Opportunity', action: 'toast', message: 'Opening Stanford opportunity in Salesforce…' }, { label: 'Draft Re-Engagement', action: 'toast', message: 'Drafting personalized re-engagement email…' }],
-          timestamp: 'At risk'
-        },
-        {
-          id: 'sh-collab', type: 'top-collaborators', label: 'Top Collaborators', urgency: 'medium',
-          source: 'Google Docs', sourceBadgeColor: '#4285f4', sourceIcon: 'ph-google-logo',
-          title: 'Lindsay Park updated Stanford Account Plan',
-          subtitle: 'Added exec sponsor section &nbsp;·&nbsp; 41 min ago',
-          body: '"Stanford Health Care Q2 Account Plan" now has a new exec sponsor map and budget approval chain. Lindsay flagged that Dr. Martinez (new CMO) is the key unworked contact.',
-          triggeredBecause: 'Lindsay updated a shared plan for your largest open deal',
-          ctas: [{ label: 'Review Changes', action: 'toast', message: 'Opening Stanford account plan…' }, { label: 'View Exec Map', action: 'toast', message: 'Loading exec sponsor map…' }],
-          timestamp: '10:41 AM'
-        },
-        {
-          id: 'sh-trend', type: 'trending', label: 'Trending', urgency: 'low',
-          source: 'Activity', sourceBadgeColor: '#059669', sourceIcon: 'ph-chart-line-up',
-          title: '6 teammates viewed this today',
-          subtitle: '"Memorial Hospital Contract Template" &nbsp;·&nbsp; Trending since 8 AM',
-          body: 'Your regional team and legal are all in this doc today — likely related to the renewal negotiation and Medtronic competitive pressure on pricing.',
-          triggeredBecause: '6 colleagues from your deal team opened this before your renewal call',
-          ctas: [{ label: 'Open Template', action: 'toast', message: 'Opening contract template…' }, { label: 'See Editors', action: 'toast', message: 'Loading recent viewers…' }],
-          timestamp: '11:15 AM'
-        },
-        {
-          id: 'sh-drift', type: 'knowledge-drift', label: 'Knowledge Drift', urgency: 'medium',
-          source: 'Regulatory', sourceBadgeColor: '#7c3aed', sourceIcon: 'ph-shield-check',
-          title: 'FDA MDR Reporting Requirements Revised',
-          subtitle: 'UDI documentation rules updated &nbsp;·&nbsp; 3 days ago',
-          body: 'FDA updated Medical Device Reporting rules for Class II devices. Affects how you document adverse event tracking in sales proposals — legal requires an updated disclaimer in all Q2 contracts.',
-          triggeredBecause: 'Regulation affects your active contract language · legal flagged action needed',
-          ctas: [{ label: 'See What Changed', action: 'toast', message: 'Opening FDA MDR diff…' }, { label: 'Notify Legal', action: 'toast', message: 'Legal team notified of FDA MDR update ✓' }],
-          timestamp: '3 days ago'
-        },
-        {
-          id: 'sh-brief', type: 'morning-brief', label: 'Morning Brief', urgency: 'medium',
-          source: 'Multiple Sources', sourceBadgeColor: '#d97706', sourceIcon: 'ph-stack',
-          title: 'Monday Brief · March 9',
-          subtitle: '1 renewal call today &nbsp;·&nbsp; 2 RFP responses due this week &nbsp;·&nbsp; 1 deal at risk',
-          body: 'Stanford deal needs engagement before April 15 close. Memorial renewal call in 22 min. Q1 pipeline at $4.8M — 14% ahead of target.',
-          triggeredBecause: 'Daily intelligence compiled from calendar, Salesforce, email, and regulatory feeds',
-          ctas: [{ label: 'Open Morning Digest', action: 'open-digest' }, { label: 'Open Inbox', action: 'open-url', url: 'https://mail.google.com' }],
-          timestamp: '9:00 AM'
+          timestamp: '{{T+22}}'
         }
       ],
       lateCard: {
@@ -826,25 +690,30 @@ Sales Director, OneUnited Bank`
         timestamp: 'Just now'
       },
       morningDigest: {
-        date: 'Monday, Mar 9',
-        summary: '2 calls today · 1 forgotten follow-up · Competitive intel ran overnight · 1 contract doc needs update',
+        summary: '2 calls today · 1 forgotten follow-up · 2 cowork jobs ran overnight · exec plan updated',
         sections: [
           { type: 'calendar', title: "Today's Calendar", items: [
-            { time: '11:00 AM', title: 'Renewal Call — Memorial Hospital', context: '$340K renewal · Medtronic competing · value defense needed', color: '#0176d3' },
-            { time: '3:00 PM', title: 'Weekly Pipeline Review', context: '4 deals to discuss · Stanford flagged', color: '#059669' }
+            { timeOffset: 22, title: 'Renewal Call — Memorial Hospital', context: '$340K renewal · Medtronic competing · value defense needed', color: '#0176d3' },
+            { timeOffset: 240, title: 'Weekly Pipeline Review', context: '4 deals to discuss · Stanford flagged', color: '#059669' }
+          ]},
+          { type: 'signals', title: 'Signals & Activity', items: [
+            { icon: 'ph-user-edit', text: 'Lindsay Park added exec sponsor map to "Stanford Health Care Q2 Account Plan" — new CMO Dr. Martinez flagged as key unworked contact · budget approval chain updated', meta: '{{T-41m}}' },
+            { icon: 'ph-trend-up', text: '"Memorial Hospital Contract Template" trending — 6 regional team and legal members opened it this morning before your renewal call', meta: 'Since 8 AM today' }
           ]},
           { type: 'commitments', title: 'Forgotten Commitments', items: [
             { text: 'You told Dr. Anand: "I\'ll send updated device specs before our renewal call"', source: 'Email · Mar 6', overdue: true },
             { text: 'You promised legal: "I\'ll review the updated contract disclaimers this week"', source: 'Teams · Last week', overdue: false }
           ]},
           { type: 'blockers', title: 'Awaiting Your Reply', items: [
-            { text: 'Lindsay Park is waiting on your approval of the Stanford exec sponsor map before sharing externally', source: '10:41 AM today' }
+            { text: 'Lindsay Park is waiting on your approval of the Stanford exec sponsor map before sharing externally', source: '{{T-41m}}' }
           ]},
           { type: 'cowork', title: 'Overnight Cowork Results', items: [
-            { label: 'Competitive Intelligence Report', note: 'Ran at 10:00 PM · Medtronic pricing analysis complete · 3 counter-points ready for Memorial call' }
+            { label: 'Competitive Intelligence Report', note: 'Ran at 10:00 PM · Medtronic pricing analysis complete · 3 counter-arguments ready for Memorial renewal call' },
+            { label: 'Follow-up with leads silent 2+ weeks', note: 'Ran automatically · Stanford Health Care: 18 days no activity · Stryker competitor spotted at procurement office · Draft re-engagement email ready' },
+            { label: 'Regulatory Contract Language Update', note: 'FDA MDR reporting rules revised for Class II devices · Affects active contract disclaimers · Legal flagged action needed · Update brief ready' }
           ]},
           { type: 'focus', title: 'Suggested Focus Window', items: [
-            { time: '1:00 PM – 3:00 PM', note: '2 hrs clear — tackle Stanford re-engagement email and FDA contract language update' }
+            { text: '{{T+100}} – {{T+220}} · 2 hrs clear — send specs to Dr. Anand, review Stanford re-engagement draft, and approve Lindsay\'s exec map' }
           ]}
         ]
       }
@@ -861,61 +730,11 @@ Sales Director, OneUnited Bank`
           id: 'sa-meet', type: 'upcoming-meeting', label: 'Upcoming Meeting', urgency: 'high',
           source: 'Calendar', sourceBadgeColor: '#0176d3', sourceIcon: 'ph-calendar-blank',
           title: 'Fleet Demo Day — Amazon Logistics',
-          subtitle: 'AutoNation Showroom &nbsp;·&nbsp; Starts in 35 min',
-          body: 'Fleet manager James O\'Brien and two procurement leads attending. 48-vehicle F-150 Pro order on the table. Confirm Q2 delivery commitment and fleet financing terms before they arrive.',
+          subtitle: 'AutoNation Showroom &nbsp;·&nbsp; Starts at {{T+35}}',
+          body: 'Fleet manager James O\'Brien and two procurement leads attending. 48-vehicle F-150 Pro order on the table. March incentives just updated — F-150 Pro discount increased 2.5%.',
           triggeredBecause: 'Demo starts in 35 min · 48-vehicle deal depends on today\'s close',
           ctas: [{ label: 'View Account Prep', action: 'toast', message: 'Opening Amazon fleet account prep…' }, { label: 'Get Directions', action: 'open-url', url: 'https://maps.google.com' }],
-          timestamp: '10:00 AM today'
-        },
-        {
-          id: 'sa-deal', type: 'deal-momentum', label: 'Deal/Case Momentum', urgency: 'high',
-          source: 'CDK', sourceBadgeColor: '#059669', sourceIcon: 'ph-car',
-          title: 'Dell Technologies Fleet Quote Gone Quiet',
-          subtitle: '$840K — 60-vehicle mixed fleet &nbsp;·&nbsp; No response in 12 days',
-          body: 'Dell\'s procurement lead requested a revised EV-heavy quote on Feb 25 — no reply since. EnterpriseFleet was spotted at Dell\'s Austin office last Tuesday.',
-          triggeredBecause: '12 days silent after a quote request · competitor in active conversations',
-          ctas: [{ label: 'View Quote', action: 'toast', message: 'Opening Dell fleet quote in CDK…' }, { label: 'Draft Follow-Up', action: 'toast', message: 'Drafting Dell follow-up email…' }],
-          timestamp: 'At risk'
-        },
-        {
-          id: 'sa-collab', type: 'top-collaborators', label: 'Top Collaborators', urgency: 'medium',
-          source: 'SharePoint', sourceBadgeColor: '#4285f4', sourceIcon: 'ph-files',
-          title: 'Rachel Moore updated Q1 Fleet Incentive Sheet',
-          subtitle: 'March rates revised &nbsp;·&nbsp; 1 hr ago',
-          body: '"Q1 Fleet Pricing Playbook" now has updated March incentive rates — F-150 Pro fleet discount increased 2.5%, Lightning EV fleet incentive extended through April 30.',
-          triggeredBecause: 'Pricing you use in active quotes was just updated · affects Dell and Amazon deals',
-          ctas: [{ label: 'Review Updates', action: 'toast', message: 'Opening Q1 fleet incentive sheet…' }, { label: 'Update Dell Quote', action: 'toast', message: 'Flagging Dell quote for rate update…' }],
-          timestamp: '9:45 AM'
-        },
-        {
-          id: 'sa-trend', type: 'trending', label: 'Trending', urgency: 'low',
-          source: 'Activity', sourceBadgeColor: '#059669', sourceIcon: 'ph-chart-line-up',
-          title: '5 managers viewing this now',
-          subtitle: '"2026 Fleet Pricing Playbook" &nbsp;·&nbsp; Trending since 8:30 AM',
-          body: 'Regional managers in Dallas, Chicago, and Atlanta all opened the fleet playbook this morning — likely prepping for the same quarter-end push you\'re running.',
-          triggeredBecause: '5 regional peers are reading this · Q1 close window opens today',
-          ctas: [{ label: 'Open Playbook', action: 'toast', message: 'Opening fleet pricing playbook…' }, { label: 'See Viewers', action: 'toast', message: 'Loading viewer list…' }],
-          timestamp: '9:00 AM'
-        },
-        {
-          id: 'sa-drift', type: 'knowledge-drift', label: 'Knowledge Drift', urgency: 'medium',
-          source: 'Regulatory', sourceBadgeColor: '#7c3aed', sourceIcon: 'ph-shield-check',
-          title: 'EPA Clean Fleet Act Deadlines Announced',
-          subtitle: '2027 EV transition thresholds published &nbsp;·&nbsp; 2 days ago',
-          body: 'EPA finalized corporate fleet EV percentage requirements: 30% by 2027 for fleets over 50 vehicles. Directly affects 4 of your active large-fleet quotes — EV pitch needs updating.',
-          triggeredBecause: 'New regulation directly affects 4 of your active fleet proposals',
-          ctas: [{ label: 'See Full Update', action: 'toast', message: 'Opening EPA Clean Fleet Act summary…' }, { label: 'Update EV Pitches', action: 'toast', message: 'Flagging 4 active quotes for EV compliance update…' }],
-          timestamp: '2 days ago'
-        },
-        {
-          id: 'sa-brief', type: 'morning-brief', label: 'Morning Brief', urgency: 'medium',
-          source: 'Multiple Sources', sourceBadgeColor: '#d97706', sourceIcon: 'ph-stack',
-          title: 'Monday Brief · March 9',
-          subtitle: '1 demo today &nbsp;·&nbsp; 3 fleet bids due this week &nbsp;·&nbsp; Q1 close rate 67%',
-          body: 'Amazon demo in 35 min. Dell quote needs re-engagement. March incentive rates updated — revise open quotes before week\'s end.',
-          triggeredBecause: 'Daily intelligence compiled from calendar, CDK, email, and pricing systems',
-          ctas: [{ label: 'Open Morning Digest', action: 'open-digest' }, { label: 'Open Inbox', action: 'open-url', url: 'https://mail.google.com' }],
-          timestamp: '9:00 AM'
+          timestamp: '{{T+35}}'
         }
       ],
       lateCard: {
@@ -929,12 +748,15 @@ Sales Director, OneUnited Bank`
         timestamp: 'Just now'
       },
       morningDigest: {
-        date: 'Monday, Mar 9',
-        summary: '1 demo today · 1 forgotten commitment · Pricing updated overnight · 3 bids due this week',
+        summary: '1 demo today · 2 cowork jobs ran overnight · pricing updated · 3 bids due this week',
         sections: [
           { type: 'calendar', title: "Today's Calendar", items: [
-            { time: '10:00 AM', title: 'Fleet Demo Day — Amazon Logistics', context: '48-vehicle F-150 order · Q2 delivery TBD', color: '#0176d3' },
-            { time: '2:00 PM', title: 'Q1 Pipeline Review with Regional Director', context: 'Bring Dell and Amazon status', color: '#d97706' }
+            { timeOffset: 35, title: 'Fleet Demo Day — Amazon Logistics', context: '48-vehicle F-150 order · Q2 delivery TBD', color: '#0176d3' },
+            { timeOffset: 240, title: 'Q1 Pipeline Review with Regional Director', context: 'Bring Dell and Amazon status', color: '#d97706' }
+          ]},
+          { type: 'signals', title: 'Signals & Activity', items: [
+            { icon: 'ph-user-edit', text: 'Rachel Moore updated Q1 Fleet Pricing Playbook — F-150 Pro fleet discount increased 2.5%, Lightning EV fleet incentive extended through {{TODAY_SHORT}}+30d · Affects your Dell and Amazon quotes', meta: '{{T-60m}}' },
+            { icon: 'ph-trend-up', text: '"2026 Fleet Pricing Playbook" trending — 5 regional managers in Dallas, Chicago, and Atlanta opened it this morning · Q1 close window opens today', meta: 'Since 8:30 AM today' }
           ]},
           { type: 'commitments', title: 'Forgotten Commitments', items: [
             { text: 'You told Dell procurement: "I\'ll have a revised EV-heavy quote to you by end of last week"', source: 'Email · Feb 25', overdue: true }
@@ -943,10 +765,11 @@ Sales Director, OneUnited Bank`
             { text: 'Rachel Moore is waiting on your approval of the updated F-150 Lightning fleet spec sheet before publishing', source: '9:45 AM today' }
           ]},
           { type: 'cowork', title: 'Overnight Cowork Results', items: [
-            { label: 'EPA Compliance Analysis', note: 'Ran at 9:00 PM · 4 quotes need EV percentage update · template revision ready for review' }
+            { label: 'EPA Clean Fleet Act Compliance Update', note: 'Ran at 9:00 PM · 30% EV by 2027 for fleets 50+ vehicles · 4 of your active large-fleet quotes need EV pitch update · Brief ready' },
+            { label: 'Follow-up with leads silent 2+ weeks', note: 'Ran automatically · Dell Technologies: 12 days silent after EV quote request · EnterpriseFleet competitor in active conversations · Draft follow-up email ready' }
           ]},
           { type: 'focus', title: 'Suggested Focus Window', items: [
-            { time: '12:00 PM – 2:00 PM', note: '2 hrs clear — ideal for Dell re-engagement and EPA quote updates' }
+            { text: '{{T+120}} – {{T+240}} · 2 hrs clear — ideal for Dell re-engagement draft and EPA quote updates before pipeline review' }
           ]}
         ]
       }
@@ -963,11 +786,11 @@ Sales Director, OneUnited Bank`
           id: 'svb-meet', type: 'upcoming-meeting', label: 'Upcoming Meeting', urgency: 'high',
           source: 'Calendar', sourceBadgeColor: '#0176d3', sourceIcon: 'ph-calendar-blank',
           title: 'QBR — Harrington Construction',
-          subtitle: 'Zoom Call &nbsp;·&nbsp; Starts in 45 min',
+          subtitle: 'Zoom Call &nbsp;·&nbsp; Starts at {{T+45}}',
           body: 'CEO Mark Harrington and CFO attending. $2.1M relationship with 4 active products. Open wire transfer issue (CS-4821) must be resolved or acknowledged before this call.',
           triggeredBecause: 'QBR in 45 min · open critical case on this account unresolved',
           ctas: [{ label: 'View Account Brief', action: 'toast', message: 'Opening Harrington Construction QBR prep…' }, { label: 'Join Call', action: 'open-url', url: 'https://zoom.us' }],
-          timestamp: '11:00 AM today'
+          timestamp: '{{T+45}}'
         },
         {
           id: 'svb-case', type: 'deal-momentum', label: 'Case Escalation Risk', urgency: 'high',
@@ -999,26 +822,6 @@ Sales Director, OneUnited Bank`
           ctas: [{ label: 'View All Cases', action: 'toast', message: 'Filtering cases by mobile login issue…' }, { label: 'Alert Tech Team', action: 'toast', message: 'Tech team alerted about mobile login spike ✓' }],
           timestamp: 'Ongoing today'
         },
-        {
-          id: 'svb-drift', type: 'knowledge-drift', label: 'Knowledge Drift', urgency: 'medium',
-          source: 'Compliance', sourceBadgeColor: '#7c3aed', sourceIcon: 'ph-shield-check',
-          title: 'Reg E Dispute Window Updated',
-          subtitle: 'Resolution deadline reduced 10 → 5 days &nbsp;·&nbsp; Effective April 1',
-          body: 'Federal Reserve updated Reg E: electronic fund transfer dispute resolution must now occur within 5 business days, down from 10. 3 of your current open disputes are affected.',
-          triggeredBecause: 'Regulation you work under was updated · 3 active cases fall under new deadline',
-          ctas: [{ label: 'See What Changed', action: 'toast', message: 'Opening Reg E compliance diff…' }, { label: 'Flag Affected Cases', action: 'toast', message: '3 cases flagged for new Reg E timeline ✓' }],
-          timestamp: '4 days ago'
-        },
-        {
-          id: 'svb-brief', type: 'morning-brief', label: 'Morning Brief', urgency: 'medium',
-          source: 'Multiple Sources', sourceBadgeColor: '#d97706', sourceIcon: 'ph-stack',
-          title: 'Monday Brief · March 9',
-          subtitle: '12 open cases &nbsp;·&nbsp; 2 SLA breaches today &nbsp;·&nbsp; 1 QBR at 11 AM',
-          body: 'Harrington Construction SLA breach in 4 hours. Mobile login anomaly needs tech escalation. Reg E change affects 3 open disputes.',
-          triggeredBecause: 'Daily intelligence compiled from Service Cloud, email, compliance, and calendar',
-          ctas: [{ label: 'Open Morning Digest', action: 'open-digest' }, { label: 'View Case Queue', action: 'toast', message: 'Opening your case queue in Service Cloud…' }],
-          timestamp: '9:00 AM'
-        }
       ],
       lateCard: {
         id: 'late-svb', type: 'trending', label: 'Anomaly Detected', urgency: 'high',
@@ -1031,25 +834,25 @@ Sales Director, OneUnited Bank`
         timestamp: 'Just now'
       },
       morningDigest: {
-        date: 'Monday, Mar 9',
-        summary: '1 QBR today · 2 SLA breaches due · mobile anomaly active · 2 cases waiting on your reply',
+        summary: '1 QBR today · 2 SLA breaches due · mobile anomaly active · 2 cowork jobs ran overnight',
         sections: [
           { type: 'calendar', title: "Today's Calendar", items: [
-            { time: '11:00 AM', title: 'QBR — Harrington Construction', context: 'Critical open case must be addressed · $2.1M relationship', color: '#0176d3' },
-            { time: '3:00 PM', title: 'Service Team Standup', context: 'Mobile login spike to discuss', color: '#059669' }
+            { timeOffset: 45, title: 'QBR — Harrington Construction', context: 'Critical open case must be addressed · $2.1M relationship', color: '#0176d3' },
+            { timeOffset: 360, title: 'Service Team Standup', context: 'Mobile login spike to discuss', color: '#059669' }
           ]},
           { type: 'commitments', title: 'Forgotten Commitments', items: [
             { text: 'You told Harrington\'s CFO: "The wire issue will be resolved by end of last week"', source: 'Email · Mar 5', overdue: true },
             { text: 'You promised Michael Torres: "I\'ll look at the Riverside Bakery escalation today"', source: 'Slack · Friday', overdue: false }
           ]},
           { type: 'blockers', title: 'Awaiting Your Reply', items: [
-            { text: 'Engineering is waiting on your case documentation to begin the wire transfer hotfix', source: '9:30 AM today' }
+            { text: 'Engineering is waiting on your case documentation to begin the wire transfer hotfix', source: '{{T-30m}}' }
           ]},
           { type: 'cowork', title: 'Overnight Cowork Results', items: [
-            { label: 'Weekly SLA Risk Report', note: 'Ran at 11:00 PM · 2 breach risks identified for today · Harrington and Riverside Bakery flagged' }
+            { label: 'Weekly SLA Risk Report', note: 'Ran at 11:00 PM · 2 breach risks identified for today · Harrington and Riverside Bakery flagged · Action list ready' },
+            { label: 'Reg E Dispute Window Compliance Review', note: 'Federal Reserve updated dispute resolution: 10 → 5 business days, effective April 1 · 3 of your current open disputes affected · Task list ready' }
           ]},
           { type: 'focus', title: 'Suggested Focus Window', items: [
-            { time: '9:00 AM – 10:45 AM', note: '1.75 hrs clear — resolve Harrington wire case before QBR starts' }
+            { text: 'Now – {{T+35}} · Resolve Harrington wire case documentation before QBR' }
           ]}
         ]
       }
@@ -1066,11 +869,11 @@ Sales Director, OneUnited Bank`
           id: 'svh-meet', type: 'upcoming-meeting', label: 'Care Coordination', urgency: 'high',
           source: 'Calendar', sourceBadgeColor: '#0176d3', sourceIcon: 'ph-calendar-blank',
           title: 'Care Coordination Round — ICU Team',
-          subtitle: 'ICU Conference Room B &nbsp;·&nbsp; Starts in 18 min',
+          subtitle: 'ICU Conference Room B &nbsp;·&nbsp; Starts at {{T+18}}',
           body: 'Dr. Chen, Dr. Patel, and charge nurse attending. Patient Nguyen and Rivera cases on agenda. Medication scheduling concern for Nguyen is unresolved — flag before the round.',
           triggeredBecause: 'Round starts in 18 min · unresolved medication concern for patient on agenda',
           ctas: [{ label: 'View Care Plans', action: 'toast', message: 'Opening ICU care plans in Epic…' }, { label: 'Notify Dr. Chen', action: 'toast', message: 'Dr. Chen notified about Nguyen medication concern ✓' }],
-          timestamp: '9:30 AM today'
+          timestamp: '{{T+18}}'
         },
         {
           id: 'svh-case', type: 'deal-momentum', label: 'Case Escalation Risk', urgency: 'high',
@@ -1082,46 +885,6 @@ Sales Director, OneUnited Bank`
           ctas: [{ label: 'View Case', action: 'toast', message: 'Opening case #8821 in Epic…' }, { label: 'Contact Family', action: 'toast', message: 'Drafting family outreach for Patient Nguyen…' }],
           timestamp: 'Escalation risk'
         },
-        {
-          id: 'svh-collab', type: 'top-collaborators', label: 'Care Plan Update', urgency: 'medium',
-          source: 'Epic', sourceBadgeColor: '#0891b2', sourceIcon: 'ph-heartbeat',
-          title: 'Dr. Chen updated Care Plan — Patient Rivera',
-          subtitle: 'Post-op recovery protocol revised &nbsp;·&nbsp; 52 min ago',
-          body: 'Revised post-op PT schedule and added new dietary restrictions for Patient Rivera. As the coordinating contact, you need to brief the family before the 2 PM visit.',
-          triggeredBecause: 'Care plan for a patient you coordinate was changed · family visit at 2 PM',
-          ctas: [{ label: 'Review Plan', action: 'toast', message: 'Opening Patient Rivera care plan…' }, { label: 'Brief Family', action: 'toast', message: 'Drafting family update for Patient Rivera…' }],
-          timestamp: '9:02 AM'
-        },
-        {
-          id: 'svh-trend', type: 'trending', label: 'Anomaly Detected', urgency: 'medium',
-          source: 'HCAHPS', sourceBadgeColor: '#f97316', sourceIcon: 'ph-chart-line-up',
-          title: '"Wait Time" Appears in 11 Surveys This Week',
-          subtitle: 'Above weekly threshold &nbsp;·&nbsp; Satisfaction score trending down',
-          body: 'Eleven patient satisfaction responses mentioned wait time negatively — up from 3 last week. The ICU and Radiology departments have the highest concentration.',
-          triggeredBecause: 'Complaint pattern exceeds threshold · your department is in the affected group',
-          ctas: [{ label: 'View Survey Data', action: 'toast', message: 'Opening HCAHPS wait time analysis…' }, { label: 'Share with Dept Head', action: 'toast', message: 'Survey trend shared with Department Head ✓' }],
-          timestamp: 'This week'
-        },
-        {
-          id: 'svh-drift', type: 'knowledge-drift', label: 'Knowledge Drift', urgency: 'medium',
-          source: 'Compliance', sourceBadgeColor: '#7c3aed', sourceIcon: 'ph-shield-check',
-          title: 'CMS Telehealth Consent Rules Updated',
-          subtitle: 'Documentation requirements revised &nbsp;·&nbsp; Jan 2026',
-          body: 'CMS updated informed consent documentation for telehealth visits — patients must now acknowledge data recording policy separately. Affects your 12 scheduled telehealth follow-ups this week.',
-          triggeredBecause: 'Regulation affects your scheduled telehealth visits · 12 patients need updated consent',
-          ctas: [{ label: 'See What Changed', action: 'toast', message: 'Opening CMS telehealth consent diff…' }, { label: 'Update Consent Forms', action: 'toast', message: '12 telehealth consent forms flagged for update ✓' }],
-          timestamp: '6 days ago'
-        },
-        {
-          id: 'svh-brief', type: 'morning-brief', label: 'Morning Brief', urgency: 'medium',
-          source: 'Multiple Sources', sourceBadgeColor: '#d97706', sourceIcon: 'ph-stack',
-          title: 'Monday Brief · March 9',
-          subtitle: '7 active cases &nbsp;·&nbsp; 3 follow-ups due by EOD &nbsp;·&nbsp; 1 care plan review',
-          body: 'ICU round in 18 min. Nguyen medication concern at escalation risk. Patient Rivera care plan updated — family visit at 2 PM.',
-          triggeredBecause: 'Daily intelligence compiled from Epic, calendar, HCAHPS, and care coordination logs',
-          ctas: [{ label: 'Open Morning Digest', action: 'open-digest' }, { label: 'Open Patient List', action: 'toast', message: 'Opening active patient list in Epic…' }],
-          timestamp: '9:00 AM'
-        }
       ],
       lateCard: {
         id: 'late-svh', type: 'trending', label: 'Satisfaction Alert', urgency: 'high',
@@ -1134,24 +897,27 @@ Sales Director, OneUnited Bank`
         timestamp: 'Just now'
       },
       morningDigest: {
-        date: 'Monday, Mar 9',
-        summary: '2 care rounds today · 1 medication concern unresolved · telehealth consent update required · 1 family briefing',
+        summary: '2 care rounds today · care plan update · 2 cowork jobs ran overnight',
         sections: [
           { type: 'calendar', title: "Today's Calendar", items: [
-            { time: '9:30 AM', title: 'ICU Care Coordination Round', context: 'Nguyen + Rivera on agenda · unresolved medication concern', color: '#0176d3' },
-            { time: '2:00 PM', title: 'Patient Rivera Family Visit', context: 'Care plan updated this morning · brief family on changes', color: '#0891b2' }
+            { timeOffset: 18, title: 'ICU Care Coordination Round', context: 'Nguyen + Rivera on agenda · medication concern unresolved', color: '#0176d3' },
+            { timeOffset: 300, title: 'Patient Rivera Family Visit', context: 'Care plan updated this morning · brief family before this', color: '#0891b2' }
+          ]},
+          { type: 'signals', title: 'Signals & Activity', items: [
+            { icon: 'ph-user-edit', text: 'Dr. Chen revised post-op recovery protocol for Patient Rivera — new PT schedule and dietary restrictions · Brief family before the {{T+300}} visit', meta: '{{T-52m}}' }
           ]},
           { type: 'commitments', title: 'Forgotten Commitments', items: [
             { text: 'You told Patient Nguyen\'s family: "We\'ll resolve the medication scheduling by Friday"', source: 'Call log · Mar 6', overdue: true }
           ]},
           { type: 'blockers', title: 'Awaiting Your Reply', items: [
-            { text: 'Dr. Chen is waiting on your review of the revised care plan before the family visit at 2 PM', source: '9:02 AM today' }
+            { text: 'Dr. Chen is waiting on your review of the revised care plan before the family visit this afternoon', source: '{{T-52m}}' }
           ]},
           { type: 'cowork', title: 'Overnight Cowork Results', items: [
-            { label: 'Weekly Case Summary', note: 'Ran at 10:00 PM · 3 cases approaching escalation threshold · Nguyen at highest risk' }
+            { label: 'Weekly Case Summary', note: 'Ran at 10:00 PM · 3 cases approaching escalation threshold · Nguyen at highest risk · Action list ready' },
+            { label: 'Telehealth Consent Compliance Scan', note: 'CMS updated consent rules · 12 of your scheduled telehealth follow-ups need updated consent forms · Task list ready' }
           ]},
           { type: 'focus', title: 'Suggested Focus Window', items: [
-            { time: '11:00 AM – 1:00 PM', note: '2 hrs clear — resolve Nguyen medication concern and update telehealth consent forms' }
+            { text: '{{T+30}} – {{T+180}} · 2 hrs clear — resolve Nguyen medication concern and update telehealth consent forms' }
           ]}
         ]
       }
@@ -1168,11 +934,11 @@ Sales Director, OneUnited Bank`
           id: 'sva-meet', type: 'upcoming-meeting', label: 'Upcoming Appointment', urgency: 'high',
           source: 'DMS', sourceBadgeColor: '#059669', sourceIcon: 'ph-car',
           title: '2023 BMW X5 — Michael Reeves',
-          subtitle: 'Service Bay 4 &nbsp;·&nbsp; Arrives in 20 min',
+          subtitle: 'Service Bay 4 &nbsp;·&nbsp; Arrives at {{T+20}}',
           body: 'Oil service + open recall: Brake fluid line inspection (TSB-2026-08). Customer flagged engine noise last visit — check tech notes. Previous service dispute — be proactive with timing estimate.',
           triggeredBecause: 'Appointment in 20 min · open recall + prior dispute on this vehicle',
           ctas: [{ label: 'View RO', action: 'toast', message: 'Opening Repair Order #5102 in CDK…' }, { label: 'View Tech Notes', action: 'toast', message: 'Loading technician notes for 2023 X5…' }],
-          timestamp: '9:30 AM today'
+          timestamp: '{{T+20}}'
         },
         {
           id: 'sva-case', type: 'deal-momentum', label: 'Customer Complaint', urgency: 'high',
@@ -1203,26 +969,6 @@ Sales Director, OneUnited Bank`
           triggeredBecause: 'Survey score below target · pattern in responses linked to your scheduling window',
           ctas: [{ label: 'View Reviews', action: 'toast', message: 'Opening service survey breakdown…' }, { label: 'Adjust Time Estimates', action: 'toast', message: 'Flagging time estimate calibration for service team…' }],
           timestamp: 'This week'
-        },
-        {
-          id: 'sva-drift', type: 'knowledge-drift', label: 'Service Bulletin', urgency: 'medium',
-          source: 'BMW', sourceBadgeColor: '#7c3aed', sourceIcon: 'ph-shield-check',
-          title: 'BMW TSB-2026-08 Issued',
-          subtitle: 'iDrive software — 2022-2024 models &nbsp;·&nbsp; 3 days ago',
-          body: 'Technical Service Bulletin affects iDrive 8 navigation and connectivity on 2022-2024 3-Series, 5-Series, and X5 models. 6 vehicles booked this week are in the affected range.',
-          triggeredBecause: '6 of your booked vehicles this week are affected by this recall notice',
-          ctas: [{ label: 'View Bulletin', action: 'toast', message: 'Opening TSB-2026-08 details…' }, { label: 'Flag Affected ROs', action: 'toast', message: '6 ROs flagged for TSB-2026-08 inspection ✓' }],
-          timestamp: '3 days ago'
-        },
-        {
-          id: 'sva-brief', type: 'morning-brief', label: 'Morning Brief', urgency: 'medium',
-          source: 'Multiple Sources', sourceBadgeColor: '#d97706', sourceIcon: 'ph-stack',
-          title: 'Monday Brief · March 9',
-          subtitle: '9 ROs today &nbsp;·&nbsp; 2 vehicles waiting on parts &nbsp;·&nbsp; 1 recall appointment',
-          body: 'Michael Reeves recall appointment in 20 min. Patricia Chen complaint still open. TSB-2026-08 affects 6 of today\'s vehicles.',
-          triggeredBecause: 'Daily intelligence compiled from DMS, customer survey, BMW TechInfo, and calendar',
-          ctas: [{ label: 'Open Morning Digest', action: 'open-digest' }, { label: 'View Today\'s ROs', action: 'toast', message: 'Opening today\'s repair order schedule…' }],
-          timestamp: '9:00 AM'
         }
       ],
       lateCard: {
@@ -1236,24 +982,24 @@ Sales Director, OneUnited Bank`
         timestamp: 'Just now'
       },
       morningDigest: {
-        date: 'Monday, Mar 9',
-        summary: '9 ROs scheduled · 1 complaint unresolved · TSB recall affects 6 vehicles · 2 tech flags',
+        summary: '9 ROs scheduled · 1 complaint unresolved · TSB recall affects 6 vehicles · 1 cowork job ran overnight',
         sections: [
           { type: 'calendar', title: "Today's RO Schedule", items: [
-            { time: '9:30 AM', title: '2023 BMW X5 — Michael Reeves', context: 'Recall + oil service · prior noise complaint on file', color: '#059669' },
-            { time: '11:00 AM', title: '2024 BMW 3-Series — Anderson', context: 'TSB-2026-08 iDrive update required', color: '#0176d3' }
+            { timeOffset: 20, title: '2023 BMW X5 — Michael Reeves', context: 'Recall + oil service · prior noise complaint on file', color: '#059669' },
+            { timeOffset: 90, title: '2024 BMW 3-Series — Anderson', context: 'TSB-2026-08 iDrive update required', color: '#0176d3' }
           ]},
           { type: 'commitments', title: 'Forgotten Commitments', items: [
             { text: 'You told Patricia Chen: "We\'ll have the brake noise diagnosed by end of last week"', source: 'Call log · Mar 6', overdue: true }
           ]},
           { type: 'blockers', title: 'Awaiting Your Reply', items: [
-            { text: 'Johnson is waiting on your call to approve the $2,400 transmission repair estimate before work continues', source: 'Tech note · 8:55 AM' }
+            { text: 'Johnson is waiting on your call to approve the $2,400 transmission repair estimate before work continues', source: 'Tech note · {{T-15m}}' }
           ]},
           { type: 'cowork', title: 'Overnight Cowork Results', items: [
-            { label: 'Weekly Customer Satisfaction Summary', note: 'Ran at 10:00 PM · 5 low-score surveys identified · wait time pattern flagged for today\'s review' }
+            { label: 'Weekly Customer Satisfaction Summary', note: 'Ran at 10:00 PM · 5 low-score surveys identified · wait time pattern flagged · review ready' },
+            { label: 'BMW TSB-2026-08 Compliance Scan', note: '6 of today\'s booked vehicles have iDrive recall · All flagged in DMS for technician check-in' }
           ]},
           { type: 'focus', title: 'Suggested Focus Window', items: [
-            { time: '12:30 PM – 2:00 PM', note: '1.5 hrs slow period — tackle Patricia Chen complaint and survey response plan' }
+            { text: '{{T+90}} – {{T+180}} · Slow period — tackle Patricia Chen complaint and call Johnson for transmission approval' }
           ]}
         ]
       }
@@ -1287,16 +1033,6 @@ Sales Director, OneUnited Bank`
           timestamp: 'Since yesterday'
         },
         {
-          id: 'mb-collab', type: 'top-collaborators', label: 'Top Collaborators', urgency: 'medium',
-          source: 'Google Docs', sourceBadgeColor: '#4285f4', sourceIcon: 'ph-google-logo',
-          title: 'Jamie Rivera updated Q2 Media Plan',
-          subtitle: 'Budget shifted display → paid social &nbsp;·&nbsp; 2 hrs ago',
-          body: '"Q2 2026 Media Allocation" reallocated $120K from programmatic display to paid social — based on Q1 LinkedIn performance lift. This changes your creative pipeline for April.',
-          triggeredBecause: 'Budget shift affects your active campaigns · creative assets need realignment',
-          ctas: [{ label: 'Review Changes', action: 'toast', message: 'Opening Q2 media plan in Google Docs…' }, { label: 'Update Creative Pipeline', action: 'toast', message: 'Flagging Q2 creative pipeline for reallocation ✓' }],
-          timestamp: '8:30 AM'
-        },
-        {
           id: 'mb-trend', type: 'trending', label: 'Search Trend', urgency: 'low',
           source: 'Google Trends', sourceBadgeColor: '#059669', sourceIcon: 'ph-chart-line-up',
           title: '"High-Yield Savings" Searches Up 37%',
@@ -1305,26 +1041,6 @@ Sales Director, OneUnited Bank`
           triggeredBecause: 'Search demand spike in your product category · you have no content ranking for it',
           ctas: [{ label: 'View Trend Data', action: 'toast', message: 'Opening high-yield savings trend analysis…' }, { label: 'Create Content Brief', action: 'toast', message: 'Creating SEO content brief for high-yield savings…' }],
           timestamp: 'This week'
-        },
-        {
-          id: 'mb-drift', type: 'knowledge-drift', label: 'Knowledge Drift', urgency: 'medium',
-          source: 'Compliance', sourceBadgeColor: '#7c3aed', sourceIcon: 'ph-shield-check',
-          title: 'CFPB Digital Advertising Guidance Updated',
-          subtitle: 'APY disclosure rules revised &nbsp;·&nbsp; 5 days ago',
-          body: 'CFPB updated guidance on digital APY disclosures — rate claims must now include a "conditions apply" link visible in the first viewport. 2 of your active ad creatives may be non-compliant.',
-          triggeredBecause: '2 of your running ad creatives may violate the new CFPB disclosure guidance',
-          ctas: [{ label: 'See What Changed', action: 'toast', message: 'Opening CFPB disclosure guidance diff…' }, { label: 'Audit Active Ads', action: 'toast', message: 'Compliance audit flagged for 2 active creatives ✓' }],
-          timestamp: '5 days ago'
-        },
-        {
-          id: 'mb-brief', type: 'morning-brief', label: 'Morning Brief', urgency: 'medium',
-          source: 'Multiple Sources', sourceBadgeColor: '#d97706', sourceIcon: 'ph-stack',
-          title: 'Monday Brief · March 9',
-          subtitle: '3 campaigns live &nbsp;·&nbsp; A/B test ends today &nbsp;·&nbsp; Q2 budget review Thursday',
-          body: 'Spring Savings CTR needs investigation. LinkedIn leads outperforming — consider scaling. CFPB compliance check needed on 2 active creatives.',
-          triggeredBecause: 'Daily intelligence compiled from Marketing Cloud, Salesforce, Google Trends, and compliance',
-          ctas: [{ label: 'Open Morning Digest', action: 'open-digest' }, { label: 'View Campaign Dashboard', action: 'toast', message: 'Opening campaign performance dashboard…' }],
-          timestamp: '9:00 AM'
         }
       ],
       lateCard: {
@@ -1338,25 +1054,28 @@ Sales Director, OneUnited Bank`
         timestamp: 'Just now'
       },
       morningDigest: {
-        date: 'Monday, Mar 9',
-        summary: '3 campaigns live · CTR drop needs investigation · A/B test ending · CFPB compliance check required',
+        summary: '3 campaigns live · CTR drop needs fix · A/B test ending · 2 cowork jobs ran overnight',
         sections: [
           { type: 'calendar', title: "Today's Calendar", items: [
-            { time: '10:00 AM', title: 'Creative Review — Spring Savings', context: 'CTR drop 24% since Thursday · bring fix options', color: '#f97316' },
-            { time: '2:00 PM', title: 'Weekly Marketing Standup', context: 'LinkedIn overperformance and Q2 reallocation to discuss', color: '#0176d3' }
+            { timeOffset: 60, title: 'Creative Review — Spring Savings', context: 'CTR drop 24% since Thursday · bring fix options', color: '#f97316' },
+            { timeOffset: 300, title: 'Weekly Marketing Standup', context: 'LinkedIn overperformance and Q2 reallocation to discuss', color: '#0176d3' }
+          ]},
+          { type: 'signals', title: 'Signals & Activity', items: [
+            { icon: 'ph-user-edit', text: 'Jamie Rivera shifted $120K in Q2 Media Plan from programmatic display to paid social — based on Q1 LinkedIn performance lift · Affects your April creative pipeline', meta: '{{T-120m}}' }
           ]},
           { type: 'commitments', title: 'Forgotten Commitments', items: [
             { text: 'You told Jamie: "I\'ll review the Q2 media plan reallocation by end of last week"', source: 'Slack · Mar 6', overdue: true },
             { text: 'You promised Legal: "I\'ll send updated APY ad creatives for review before Monday"', source: 'Email · Mar 5', overdue: true }
           ]},
           { type: 'blockers', title: 'Awaiting Your Reply', items: [
-            { text: 'Jamie is waiting on your Q2 media plan approval before finalizing vendor commitments', source: '8:30 AM today' }
+            { text: 'Jamie is waiting on your Q2 media plan approval before finalizing vendor commitments', source: '{{T-120m}}' }
           ]},
           { type: 'cowork', title: 'Overnight Cowork Results', items: [
-            { label: 'Weekly Competitor Campaign Monitor', note: 'Ran at 11:00 PM · 3 competitor campaign changes detected · US Bank and Marcus by Goldman flagged' }
+            { label: 'Weekly Competitor Campaign Monitor', note: 'Ran at 11:00 PM · US Bank and Marcus by Goldman flagged · 3 competitor campaign changes detected · Counter-brief ready' },
+            { label: 'CFPB Digital Ad Compliance Review', note: 'APY disclosure rules updated · 2 of your running ad creatives require a visible conditions-apply link · Audit report ready' }
           ]},
           { type: 'focus', title: 'Suggested Focus Window', items: [
-            { time: '11:00 AM – 1:00 PM', note: '2 hrs clear — audit CFPB compliance on active creatives and brief on Spring Savings fix' }
+            { text: '{{T+120}} – {{T+240}} · 2 hrs clear — audit CFPB compliance on active creatives and prep Spring Savings fix' }
           ]}
         ]
       }
@@ -1390,16 +1109,6 @@ Sales Director, OneUnited Bank`
           timestamp: 'Yesterday'
         },
         {
-          id: 'mh-collab', type: 'top-collaborators', label: 'Top Collaborators', urgency: 'medium',
-          source: 'Confluence', sourceBadgeColor: '#4285f4', sourceIcon: 'ph-files',
-          title: 'Amy Zhang updated Member Acquisition Model',
-          subtitle: 'SEO channel underreported by 18% &nbsp;·&nbsp; 3 hrs ago',
-          body: 'Amy revised the member acquisition attribution model — SEO channel was underreported by 18% due to direct-type-in misclassification. This changes Q1 channel ROI rankings significantly.',
-          triggeredBecause: 'Attribution model you rely on for budget decisions was revised · SEO underreported',
-          ctas: [{ label: 'Review Changes', action: 'toast', message: 'Opening updated attribution model in Confluence…' }, { label: 'Recalculate Q1 ROI', action: 'toast', message: 'Running Q1 channel ROI recalculation with new model…' }],
-          timestamp: '7:45 AM'
-        },
-        {
           id: 'mh-trend', type: 'trending', label: 'Search Trend', urgency: 'medium',
           source: 'Google Trends', sourceBadgeColor: '#059669', sourceIcon: 'ph-chart-line-up',
           title: '"Affordable Health Insurance 2026" Up 31%',
@@ -1409,26 +1118,6 @@ Sales Director, OneUnited Bank`
           ctas: [{ label: 'View Trend Data', action: 'toast', message: 'Opening health insurance search trend analysis…' }, { label: 'Create Florida Content', action: 'toast', message: 'Creating Florida market content brief ✓' }],
           timestamp: 'This week'
         },
-        {
-          id: 'mh-drift', type: 'knowledge-drift', label: 'Knowledge Drift', urgency: 'medium',
-          source: 'Compliance', sourceBadgeColor: '#7c3aed', sourceIcon: 'ph-shield-check',
-          title: 'HHS ACA Marketing Compliance Updated',
-          subtitle: 'Email marketing restrictions revised &nbsp;·&nbsp; 7 days ago',
-          body: 'HHS updated ACA marketplace marketing rules — email campaigns must now include a "not affiliated with the Federal Marketplace" disclaimer. 1 of your active email sequences is missing this.',
-          triggeredBecause: '1 of your active email campaigns may be non-compliant with new HHS guidance',
-          ctas: [{ label: 'See What Changed', action: 'toast', message: 'Opening HHS ACA marketing compliance diff…' }, { label: 'Audit Email Sequences', action: 'toast', message: 'Compliance audit flagged for active email sequences ✓' }],
-          timestamp: '7 days ago'
-        },
-        {
-          id: 'mh-brief', type: 'morning-brief', label: 'Morning Brief', urgency: 'medium',
-          source: 'Multiple Sources', sourceBadgeColor: '#d97706', sourceIcon: 'ph-stack',
-          title: 'Monday Brief · March 9',
-          subtitle: '4 active campaigns &nbsp;·&nbsp; Enrollment closes in 9 days &nbsp;·&nbsp; Q1 target at 94%',
-          body: 'CPL increase needs attention before week\'s end. Record conversion day yesterday — SEO surge. ACA email compliance issue in 1 active sequence.',
-          triggeredBecause: 'Daily intelligence compiled from Meta Ads, attribution model, Google Trends, and HHS feeds',
-          ctas: [{ label: 'Open Morning Digest', action: 'open-digest' }, { label: 'View Enrollment Dashboard', action: 'toast', message: 'Opening open enrollment performance dashboard…' }],
-          timestamp: '9:00 AM'
-        }
       ],
       lateCard: {
         id: 'late-mh', type: 'trending', label: 'Volume Alert', urgency: 'high',
@@ -1441,25 +1130,28 @@ Sales Director, OneUnited Bank`
         timestamp: 'Just now'
       },
       morningDigest: {
-        date: 'Monday, Mar 9',
-        summary: '4 campaigns live · enrollment closes in 9 days · ACA compliance issue · attribution model updated',
+        summary: '4 campaigns live · enrollment closes in 9 days · 2 cowork jobs ran overnight',
         sections: [
           { type: 'calendar', title: "Today's Calendar", items: [
-            { time: '10:00 AM', title: 'Enrollment Performance Review', context: 'CPL increase + record conversion day to discuss', color: '#7c3aed' },
-            { time: '1:00 PM', title: 'Creative Review — Final 10 Days Push', context: 'Facebook audience refresh decision needed', color: '#f97316' }
+            { timeOffset: 60, title: 'Enrollment Performance Review', context: 'CPL increase + record conversion day to discuss', color: '#7c3aed' },
+            { timeOffset: 240, title: 'Creative Review — Final 10 Days Push', context: 'Facebook audience refresh decision needed', color: '#f97316' }
+          ]},
+          { type: 'signals', title: 'Signals & Activity', items: [
+            { icon: 'ph-user-edit', text: 'Amy Zhang revised member acquisition attribution model — SEO channel underreported by 18% · Recalculation changes Q1 channel ROI rankings significantly', meta: '{{T-195m}}' }
           ]},
           { type: 'commitments', title: 'Forgotten Commitments', items: [
             { text: 'You told Amy: "I\'ll validate the attribution model changes before Monday\'s budget meeting"', source: 'Slack · Mar 7', overdue: true },
             { text: 'You promised Legal: "I\'ll review the email sequence disclaimers this week"', source: 'Email · Mar 4', overdue: false }
           ]},
           { type: 'blockers', title: 'Awaiting Your Reply', items: [
-            { text: 'Amy Zhang is waiting on your sign-off on the updated attribution model before sharing with leadership', source: '7:45 AM today' }
+            { text: 'Amy Zhang is waiting on your sign-off on the updated attribution model before sharing with leadership', source: '{{T-195m}}' }
           ]},
           { type: 'cowork', title: 'Overnight Cowork Results', items: [
-            { label: 'Late Enrollment Search Surge Analysis', note: 'Ran at 9:00 PM · 31% demand spike in target markets · Florida content gap identified · brief ready' }
+            { label: 'Late Enrollment Search Surge Analysis', note: 'Ran at 9:00 PM · 31% demand spike in TX, FL, OH · Florida content gap identified · Brief ready' },
+            { label: 'ACA Marketing Compliance Scan', note: 'HHS updated email marketing rules · 1 active email sequence missing required marketplace disclaimer · Fix brief ready' }
           ]},
           { type: 'focus', title: 'Suggested Focus Window', items: [
-            { time: '11:00 AM – 1:00 PM', note: '2 hrs clear — fix ACA email compliance and review Amy\'s attribution model changes' }
+            { text: '{{T+120}} – {{T+220}} · 2 hrs clear — fix ACA email compliance and review Amy\'s attribution model changes' }
           ]}
         ]
       }
@@ -1491,17 +1183,7 @@ Sales Director, OneUnited Bank`
           triggeredBecause: 'High-intent lease-end segment ready · outreach window opens now for best conversion',
           ctas: [{ label: 'View Segment', action: 'toast', message: 'Opening lease-end segment in Ford Credit CRM…' }, { label: 'Launch Campaign', action: 'toast', message: 'Launching personalized lease-end re-engagement campaign ✓' }],
           timestamp: 'Ready now'
-        },
-        {
-          id: 'ma-collab', type: 'top-collaborators', label: 'Top Collaborators', urgency: 'medium',
-          source: 'Box', sourceBadgeColor: '#4285f4', sourceIcon: 'ph-files',
-          title: 'Kevin Zhao updated Q2 Dealer Co-Op Brief',
-          subtitle: 'EV incentives now featured &nbsp;·&nbsp; 1 hr ago',
-          body: '"Q2 Dealer Co-Op Creative Brief" now leads with Ford EV incentives and tax credit messaging — in response to the Tesla price cut last week. Affects creative for 4 of your active dealer campaigns.',
-          triggeredBecause: 'Creative brief for your active campaigns was revised in response to competitor move',
-          ctas: [{ label: 'Review Brief', action: 'toast', message: 'Opening Q2 dealer co-op creative brief…' }, { label: 'Update Active Campaigns', action: 'toast', message: 'Flagging 4 campaigns for creative refresh ✓' }],
-          timestamp: '9:00 AM'
-        },
+        },,
         {
           id: 'ma-trend', type: 'trending', label: 'Search Trend', urgency: 'medium',
           source: 'Google Trends', sourceBadgeColor: '#059669', sourceIcon: 'ph-chart-line-up',
@@ -1511,27 +1193,7 @@ Sales Director, OneUnited Bank`
           triggeredBecause: 'Demand spike in your key markets · Ford has no ranking content for this query',
           ctas: [{ label: 'View Trend Data', action: 'toast', message: 'Opening EV tax credit search trend analysis…' }, { label: 'Create Content Brief', action: 'toast', message: 'Creating EV tax credit SEO content brief ✓' }],
           timestamp: 'This week'
-        },
-        {
-          id: 'ma-drift', type: 'knowledge-drift', label: 'Knowledge Drift', urgency: 'medium',
-          source: 'Regulatory', sourceBadgeColor: '#7c3aed', sourceIcon: 'ph-shield-check',
-          title: 'FTC Motor Vehicle Advertising Rule Updated',
-          subtitle: 'Fuel economy claim disclosures revised &nbsp;·&nbsp; 4 days ago',
-          body: 'FTC updated auto advertising rules — fuel economy claims in digital ads now require a visible EPA rating disclaimer with each claim, not just at the bottom. 3 of your active campaigns are affected.',
-          triggeredBecause: '3 of your active campaigns may violate the new FTC fuel economy disclosure rule',
-          ctas: [{ label: 'See What Changed', action: 'toast', message: 'Opening FTC motor vehicle advertising rule diff…' }, { label: 'Audit Active Campaigns', action: 'toast', message: 'Compliance audit flagged for 3 active campaigns ✓' }],
-          timestamp: '4 days ago'
-        },
-        {
-          id: 'ma-brief', type: 'morning-brief', label: 'Morning Brief', urgency: 'medium',
-          source: 'Multiple Sources', sourceBadgeColor: '#d97706', sourceIcon: 'ph-stack',
-          title: 'Monday Brief · March 9',
-          subtitle: '3 model campaigns live &nbsp;·&nbsp; F-150 Lightning inventory low &nbsp;·&nbsp; Q1 apps on track',
-          body: 'APR campaign conversion issue needs landing page fix. Lease-end segment ready to launch. FTC compliance check needed on 3 running campaigns.',
-          triggeredBecause: 'Daily intelligence compiled from Adobe Analytics, Ford Credit CRM, Google Trends, and FTC feeds',
-          ctas: [{ label: 'Open Morning Digest', action: 'open-digest' }, { label: 'View Campaign Dashboard', action: 'toast', message: 'Opening campaign performance dashboard…' }],
-          timestamp: '9:00 AM'
-        }
+        },,
       ],
       lateCard: {
         id: 'late-ma', type: 'deal-momentum', label: 'Product Alert', urgency: 'high',
@@ -1544,25 +1206,28 @@ Sales Director, OneUnited Bank`
         timestamp: 'Just now'
       },
       morningDigest: {
-        date: 'Monday, Mar 9',
-        summary: '3 campaigns live · conversion drop to fix · lease-end segment ready · FTC compliance check needed',
+        summary: '3 campaigns live · conversion drop to fix · lease-end segment ready · 2 cowork jobs ran overnight',
         sections: [
           { type: 'calendar', title: "Today's Calendar", items: [
-            { time: '10:00 AM', title: 'APR Campaign Review', context: 'Conversion drop since Friday · landing page revert decision', color: '#f97316' },
-            { time: '3:00 PM', title: 'Q1 Campaign Performance Review', context: 'Bring channel ROI breakdown and FTC compliance update', color: '#0176d3' }
+            { timeOffset: 60, title: 'APR Campaign Review', context: 'Conversion drop since Friday · landing page revert decision', color: '#f97316' },
+            { timeOffset: 360, title: 'Q1 Campaign Performance Review', context: 'Bring channel ROI breakdown and FTC compliance update', color: '#0176d3' }
+          ]},
+          { type: 'signals', title: 'Signals & Activity', items: [
+            { icon: 'ph-user-edit', text: 'Kevin Zhao updated Q2 Dealer Co-Op Creative Brief — EV incentives now featured in response to Tesla price cut · Affects 4 of your active dealer campaigns', meta: '{{T-60m}}' }
           ]},
           { type: 'commitments', title: 'Forgotten Commitments', items: [
             { text: 'You told Kevin: "I\'ll approve the Q2 co-op brief by end of last week for agency handoff"', source: 'Slack · Mar 6', overdue: true },
             { text: 'You promised Legal: "I\'ll send the updated campaign disclosures for review before Monday"', source: 'Email · Mar 5', overdue: true }
           ]},
           { type: 'blockers', title: 'Awaiting Your Reply', items: [
-            { text: 'Kevin Zhao is waiting on your creative brief approval before agency kickoff scheduled for 10 AM', source: '9:00 AM today' }
+            { text: 'Kevin Zhao is waiting on your creative brief approval before agency kickoff this morning', source: '{{T-60m}}' }
           ]},
           { type: 'cowork', title: 'Overnight Cowork Results', items: [
-            { label: 'Weekly Competitive Campaign Monitor', note: 'Ran at 10:00 PM · Tesla price cut + GM 0% APR offer detected · counter-campaign options briefed' }
+            { label: 'Weekly Competitive Campaign Monitor', note: 'Ran at 10:00 PM · Tesla price cut + GM 0% APR offer detected · Counter-campaign options briefed' },
+            { label: 'FTC Motor Vehicle Ad Compliance Review', note: 'Fuel economy claim disclosures revised · 3 of your active campaigns may be non-compliant · Audit report ready' }
           ]},
           { type: 'focus', title: 'Suggested Focus Window', items: [
-            { time: '1:00 PM – 3:00 PM', note: '2 hrs clear — approve Kevin\'s brief, audit FTC compliance, launch lease-end campaign' }
+            { text: '{{T+120}} – {{T+300}} · 2 hrs clear — approve Kevin\'s brief, audit FTC compliance, launch lease-end campaign' }
           ]}
         ]
       }

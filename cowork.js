@@ -36,12 +36,6 @@ window.Cowork = (function () {
     const tasks = {
       active: [
         {
-          id: 'task-intel-seed', key: 'intel', label: 'Weekly Intel Report',
-          goal: 'Set up a weekly competitive intelligence report for me',
-          deliveryTarget: 'feed', deliveryWhen: 'weekly',
-          createdAt: now - 86400000
-        },
-        {
           id: 'task-followup-seed', key: 'follow-up', label: 'Follow Up Stale Leads',
           goal: "Follow up with leads who haven't responded in 2+ weeks",
           deliveryTarget: 'slack', deliveryWhen: 'daily',
@@ -49,12 +43,6 @@ window.Cowork = (function () {
         }
       ],
       completed: [
-        {
-          id: 'task-board-seed', key: 'board-meeting', label: 'Board Meeting Prep',
-          goal: 'Prepare me for my board meeting tomorrow',
-          deliveryTarget: 'feed', deliveryWhen: 'now',
-          completedAt: now - 7200000
-        },
         {
           id: 'task-compliance-seed', key: 'compliance', label: 'Q1 Compliance Risk Summary',
           goal: 'Summarize Q1 compliance risks in our loan portfolio',

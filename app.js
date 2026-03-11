@@ -22,6 +22,8 @@ let _lateCardTimer  = null;
 let _aiCards = [];          // cards added via Claude API
 let _searchResultCards = []; // cards injected by search handler
 let _searchHandler = null;   // hookable external search backend
+let _dismissedCardIds  = new Set();  // persists across chrome switches
+let _dismissedCardData = new Map();  // id → card object for done-row restoration
 
 // ─── EXPOSE PUBLIC API ───────────────────────────────────────────────────────
 window.App = {
@@ -67,6 +69,8 @@ function _initPersonaSelector() {
   if (!sel) return;
   sel.addEventListener('change', e => {
     _currentPersona = e.target.value;
+    _dismissedCardIds.clear();
+    _dismissedCardData.clear();
     _initGreeting();
     _applyPersonaToChrome();
     // Re-render current chrome's feed
@@ -276,7 +280,9 @@ function _rerenderWithResults() {
   const mount = document.querySelector(`#${CHROME_IDS[_currentChrome]} .cards-mount`);
   if (!mount) return;
   mount.innerHTML = '';
-  const allCards = [..._searchResultCards, ...window.DATA.cards, ..._aiCards];
+  const personaCards = _getPersonaCards();
+  const allCards = [..._searchResultCards, ...personaCards, ..._aiCards]
+    .filter(c => !_dismissedCardIds.has(c.id));
   allCards.forEach(card => mount.appendChild(_buildCard(card)));
 }
 
@@ -369,6 +375,23 @@ function _showSkeletons(mount) {
   }
 }
 
+// ─── TIME / TOKEN HELPERS ─────────────────────────────────────────────────────
+function _timeFromNow(offsetMinutes) {
+  const d = new Date(Date.now() + offsetMinutes * 60000);
+  return d.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
+}
+
+function _resolveTokens(str) {
+  if (!str || typeof str !== 'string') return str;
+  const now = new Date();
+  return str
+    .replace(/\{\{TODAY\}\}/g,  now.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' }))
+    .replace(/\{\{TODAY_SHORT\}\}/g, now.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }))
+    .replace(/\{\{DIGEST_DATE\}\}/g, now.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' }))
+    .replace(/\{\{T\+(\d+)\}\}/g, (_, m) => _timeFromNow(parseInt(m)))
+    .replace(/\{\{T-(\d+)m\}\}/g, (_, m) => `${m} min ago`);
+}
+
 // ─── CARD RENDERING ───────────────────────────────────────────────────────────
 function renderCards(mountEl) {
   mountEl.innerHTML = '';
@@ -384,17 +407,49 @@ function renderCards(mountEl) {
   }
 
   const personaCards = _getPersonaCards();
-  const allCards = [..._searchResultCards, ...personaCards, ..._aiCards];
+  const allCards = [..._searchResultCards, ...personaCards, ..._aiCards]
+    .filter(c => !_dismissedCardIds.has(c.id));
   allCards.forEach(card => mountEl.appendChild(_buildCard(card)));
 
-  // Ensure "Completed today" section exists at bottom
-  _ensureCompletedSection(mountEl);
+  // Restore completed section from persisted dismissed state
+  const section = _ensureCompletedSection(mountEl);
+  if (_dismissedCardData.size > 0) {
+    const items = section.querySelector('.completed-section-items');
+    items.innerHTML = '';
+    _dismissedCardData.forEach(card => items.appendChild(_buildDoneRow(card, mountEl)));
+    const countEl = section.querySelector('.completed-count');
+    if (countEl) countEl.textContent = `(${_dismissedCardData.size})`;
+    section.classList.add('open');
+  }
 
   // Schedule late card arrival on main feed (simulates real-time update)
   if (mountEl.dataset.feed === 'main') {
     clearTimeout(_lateCardTimer);
     _lateCardTimer = setTimeout(() => _arriveLateCard(mountEl), 11000);
   }
+}
+
+// ─── DONE ROW BUILDER ─────────────────────────────────────────────────────────
+function _buildDoneRow(card, mountEl) {
+  const doneRow = document.createElement('div');
+  doneRow.className = 'card-done-row';
+  doneRow.innerHTML = `
+    <i class="ph ph-check-circle"></i>
+    <span class="done-title">${_resolveTokens(card.title)}</span>
+    <button class="done-undo">Undo</button>`;
+  doneRow.querySelector('.done-undo').addEventListener('click', () => {
+    _dismissedCardIds.delete(card.id);
+    _dismissedCardData.delete(card.id);
+    const sec = doneRow.closest('.completed-section');
+    const items = sec?.querySelector('.completed-section-items');
+    doneRow.remove();
+    if (items) {
+      const countEl = sec.querySelector('.completed-count');
+      if (countEl) countEl.textContent = `(${items.children.length})`;
+    }
+    if (mountEl?.isConnected) mountEl.prepend(_buildCard(card));
+  });
+  return doneRow;
 }
 
 // ─── MORNING DIGEST ───────────────────────────────────────────────────────────
@@ -404,50 +459,83 @@ function _renderMorningDigest(mountEl, digestData) {
 
   const SECTION_ICONS = {
     calendar:    'ph-calendar',
+    signals:     'ph-activity',
     commitments: 'ph-clock-countdown',
     blockers:    'ph-chat-dots',
     cowork:      'ph-sparkle',
     focus:       'ph-leaf'
   };
 
+  // Fallback items per section type
+  const FALLBACKS = {
+    calendar:    [{ fallback: true, text: 'Connect your calendar to see today\'s meetings', action: 'Connect Calendar' }],
+    cowork:      [{ fallback: true, text: 'No cowork tasks defined yet', action: 'Set up a task in Astro Cowork' }],
+    focus:       [{ fallback: true, text: 'No focus window suggestions — add your work schedule preferences', action: 'Update preferences' }]
+  };
+
   const sectionsHtml = digestData.sections.map(sec => {
-    const icon = SECTION_ICONS[sec.type] || 'ph-list';
+    const icon  = SECTION_ICONS[sec.type] || 'ph-list';
+    const items = (sec.items && sec.items.length) ? sec.items : (FALLBACKS[sec.type] || []);
     let itemsHtml = '';
 
     if (sec.type === 'calendar') {
-      itemsHtml = sec.items.map(item => `
-        <div class="md-cal-item" style="border-left-color:${item.color || 'var(--accent)'}">
-          <div class="md-cal-time">${item.time}</div>
-          <div class="md-cal-text">
-            <div class="md-cal-title">${item.title}</div>
-            ${item.context ? `<div class="md-cal-context">${item.context}</div>` : ''}
+      itemsHtml = items.map(item => {
+        if (item.fallback) return `<div class="md-fallback"><i class="ph ph-plug"></i>${item.text}</div>`;
+        // Support timeOffset (minutes from now) or hardcoded time
+        const timeStr = item.timeOffset !== undefined ? _timeFromNow(item.timeOffset) : _resolveTokens(item.time || '');
+        return `
+          <div class="md-cal-item" style="border-left-color:${item.color || 'var(--accent)'}">
+            <div class="md-cal-time">${timeStr}</div>
+            <div class="md-cal-text">
+              <div class="md-cal-title">${_resolveTokens(item.title)}</div>
+              ${item.context ? `<div class="md-cal-context">${_resolveTokens(item.context)}</div>` : ''}
+            </div>
+          </div>`;
+      }).join('');
+
+    } else if (sec.type === 'signals') {
+      itemsHtml = items.map(item => `
+        <div class="md-signal-item">
+          <i class="ph ${item.icon || 'ph-pulse'} md-signal-icon"></i>
+          <div class="md-signal-text">
+            <div class="md-signal-content">${_resolveTokens(item.text)}</div>
+            ${item.meta ? `<div class="md-signal-meta">${_resolveTokens(item.meta)}</div>` : ''}
           </div>
         </div>`).join('');
+
     } else if (sec.type === 'commitments' || sec.type === 'blockers') {
       const iconClass = sec.type === 'blockers' ? 'blocker' : '';
-      itemsHtml = sec.items.map(item => `
+      itemsHtml = items.map(item => `
         <div class="md-commit-item">
           <i class="ph ${sec.type === 'blockers' ? 'ph-chat-dots' : 'ph-clock-countdown'} md-commit-icon ${item.overdue ? 'overdue' : ''} ${iconClass}"></i>
           <div class="md-commit-text">
-            <div class="md-commit-title">${item.text}</div>
-            ${item.source ? `<div class="md-commit-source">${item.source}</div>` : ''}
+            <div class="md-commit-title">${_resolveTokens(item.text)}</div>
+            ${item.source ? `<div class="md-commit-source">${_resolveTokens(item.source)}</div>` : ''}
           </div>
         </div>`).join('');
+
     } else if (sec.type === 'cowork') {
-      itemsHtml = sec.items.map(item => `
-        <div class="md-cowork-item">
-          <i class="ph ph-sparkle md-cowork-icon"></i>
-          <div class="md-cowork-text">
-            <div class="md-cowork-title">${item.title || item.text}</div>
-            ${item.detail || item.source ? `<div class="md-cowork-detail">${item.detail || item.source}</div>` : ''}
-          </div>
-        </div>`).join('');
+      itemsHtml = items.map(item => {
+        if (item.fallback) return `<div class="md-fallback"><i class="ph ph-plus-circle"></i>${item.text}</div>`;
+        return `
+          <div class="md-cowork-item">
+            <i class="ph ph-sparkle md-cowork-icon"></i>
+            <div class="md-cowork-text">
+              <div class="md-cowork-title">${_resolveTokens(item.label || item.title || item.text)}</div>
+              ${item.note || item.detail ? `<div class="md-cowork-detail">${_resolveTokens(item.note || item.detail)}</div>` : ''}
+            </div>
+          </div>`;
+      }).join('');
+
     } else if (sec.type === 'focus') {
-      itemsHtml = sec.items.map(item => `
-        <div class="md-focus-item">
-          <i class="ph ph-leaf md-focus-icon"></i>
-          <div class="md-focus-text">${item.text || item.title}</div>
-        </div>`).join('');
+      itemsHtml = items.map(item => {
+        if (item.fallback) return `<div class="md-fallback"><i class="ph ph-leaf"></i>${item.text}</div>`;
+        return `
+          <div class="md-focus-item">
+            <i class="ph ph-leaf md-focus-icon"></i>
+            <div class="md-focus-text">${_resolveTokens(item.text || item.note || item.title)}</div>
+          </div>`;
+      }).join('');
     }
 
     return `
@@ -457,15 +545,17 @@ function _renderMorningDigest(mountEl, digestData) {
       </div>`;
   }).join('');
 
+  const todayStr = new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
+
   const digest = document.createElement('div');
-  digest.className = 'morning-digest';
+  digest.className = 'morning-digest open'; // partially expanded by default
   digest.innerHTML = `
     <div class="md-header">
       <div class="md-header-icon"><i class="ph ph-sun-horizon"></i></div>
       <div class="md-header-text">
         <div class="md-header-title">Morning Digest</div>
-        <div class="md-header-date">${digestData.date || ''}</div>
-        <div class="md-header-summary">${digestData.summary || ''}</div>
+        <div class="md-header-date">${todayStr}</div>
+        <div class="md-header-summary">${_resolveTokens(digestData.summary || '')}</div>
       </div>
       <i class="ph ph-caret-right md-chevron"></i>
     </div>
@@ -565,8 +655,9 @@ function _buildCard(card) {
   el.className = `proactive-card urgency-${card.urgency}`;
   el.dataset.cardId = card.id;
 
-  const whyHtml = card.triggeredBecause
-    ? `<div class="card-why"><i class="ph ph-lightning"></i>${card.triggeredBecause}</div>`
+  const why = _resolveTokens(card.triggeredBecause);
+  const whyHtml = why
+    ? `<div class="card-why"><i class="ph ph-lightning"></i>${why}</div>`
     : '';
 
   el.innerHTML = `
@@ -580,9 +671,9 @@ function _buildCard(card) {
     </div>
     ${whyHtml}
     <div class="card-body">
-      <div class="card-title">${card.title}</div>
-      <div class="card-subtitle">${card.subtitle}</div>
-      <div class="card-body-text">${card.body}</div>
+      <div class="card-title">${_resolveTokens(card.title)}</div>
+      <div class="card-subtitle">${_resolveTokens(card.subtitle)}</div>
+      <div class="card-body-text">${_resolveTokens(card.body)}</div>
     </div>
     <div class="card-footer">
       <div class="card-ctas">
@@ -599,13 +690,14 @@ function _buildCard(card) {
       <span class="card-timestamp">${card.timestamp}</span>
     </div>`;
 
-  // Dismiss button → collapse to done row, move to completed section
+  // Dismiss button → persist dismissed state, add to completed section
   el.querySelector('.card-dismiss').addEventListener('click', e => {
     e.stopPropagation();
-    const mountEl  = el.closest('.cards-mount');
-    const titleText = card.title;
+    const mountEl = el.closest('.cards-mount');
 
-    // Animate out
+    _dismissedCardIds.add(card.id);
+    _dismissedCardData.set(card.id, card);
+
     el.style.transition = 'opacity 0.25s, transform 0.25s';
     el.style.opacity    = '0';
     el.style.transform  = 'scale(0.95)';
@@ -613,33 +705,10 @@ function _buildCard(card) {
     setTimeout(() => {
       el.remove();
       if (!mountEl) return;
-
-      // Build done row
-      const doneRow = document.createElement('div');
-      doneRow.className = 'card-done-row';
-      doneRow.innerHTML = `
-        <i class="ph ph-check-circle"></i>
-        <span class="done-title">${titleText}</span>
-        <button class="done-undo">Undo</button>`;
-
-      // Undo re-inserts the original card
-      doneRow.querySelector('.done-undo').addEventListener('click', () => {
-        const sec = doneRow.closest('.completed-section');
-        const items = sec?.querySelector('.completed-section-items');
-        doneRow.remove();
-        if (items) {
-          const countEl = sec.querySelector('.completed-count');
-          if (countEl) countEl.textContent = `(${items.children.length})`;
-        }
-        mountEl.prepend(_buildCard(card));
-      });
-
-      // Move done row into completed section
       const section = _ensureCompletedSection(mountEl);
       const items   = section.querySelector('.completed-section-items');
-      items.prepend(doneRow);
+      items.prepend(_buildDoneRow(card, mountEl));
       section.classList.add('open');
-      // Update count badge
       const countEl = section.querySelector('.completed-count');
       if (countEl) countEl.textContent = `(${items.children.length})`;
     }, 280);
