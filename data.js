@@ -643,7 +643,7 @@ Sales Director, OneUnited Bank`
             { icon: 'ph-user-edit', text: 'Keisha Williams added 3 sections to "CRA Community Reinvestment Assessment" — Fair Lending Analysis, HMDA Data Review, and Branch Access · all relevant to your FDIC exam', meta: '{{T-23m}}' },
             { icon: 'ph-trend-up', text: '"Q2 Budget Reforecast" trending among your team — Marcus Thompson, David Chen, Amara Osei and 4 others opened it this morning · likely on your 2 PM agenda', meta: 'Since 9 AM today' }
           ]},
-          { type: 'commitments', title: 'Forgotten Commitments', items: [
+          { type: 'commitments', title: 'Commitments', items: [
             { text: 'You told David Chen: "I\'ll send Beacon Capital the final terms by Friday"', source: 'Email · Feb 20', overdue: true },
             { text: 'You told Amara: "I\'ll review the Plaid brief tonight"', source: 'Teams · Yesterday', overdue: false }
           ]},
@@ -700,7 +700,7 @@ Sales Director, OneUnited Bank`
             { icon: 'ph-user-edit', text: 'Lindsay Park added exec sponsor map to "Stanford Health Care Q2 Account Plan" — new CMO Dr. Martinez flagged as key unworked contact · budget approval chain updated', meta: '{{T-41m}}' },
             { icon: 'ph-trend-up', text: '"Memorial Hospital Contract Template" trending — 6 regional team and legal members opened it this morning before your renewal call', meta: 'Since 8 AM today' }
           ]},
-          { type: 'commitments', title: 'Forgotten Commitments', items: [
+          { type: 'commitments', title: 'Commitments', items: [
             { text: 'You told Dr. Anand: "I\'ll send updated device specs before our renewal call"', source: 'Email · Mar 6', overdue: true },
             { text: 'You promised legal: "I\'ll review the updated contract disclaimers this week"', source: 'Teams · Last week', overdue: false }
           ]},
@@ -758,7 +758,7 @@ Sales Director, OneUnited Bank`
             { icon: 'ph-user-edit', text: 'Rachel Moore updated Q1 Fleet Pricing Playbook — F-150 Pro fleet discount increased 2.5%, Lightning EV fleet incentive extended through {{TODAY_SHORT}}+30d · Affects your Dell and Amazon quotes', meta: '{{T-60m}}' },
             { icon: 'ph-trend-up', text: '"2026 Fleet Pricing Playbook" trending — 5 regional managers in Dallas, Chicago, and Atlanta opened it this morning · Q1 close window opens today', meta: 'Since 8:30 AM today' }
           ]},
-          { type: 'commitments', title: 'Forgotten Commitments', items: [
+          { type: 'commitments', title: 'Commitments', items: [
             { text: 'You told Dell procurement: "I\'ll have a revised EV-heavy quote to you by end of last week"', source: 'Email · Feb 25', overdue: true }
           ]},
           { type: 'blockers', title: 'Awaiting Your Reply', items: [
@@ -840,7 +840,7 @@ Sales Director, OneUnited Bank`
             { timeOffset: 45, title: 'QBR — Harrington Construction', context: 'Critical open case must be addressed · $2.1M relationship', color: '#0176d3' },
             { timeOffset: 360, title: 'Service Team Standup', context: 'Mobile login spike to discuss', color: '#059669' }
           ]},
-          { type: 'commitments', title: 'Forgotten Commitments', items: [
+          { type: 'commitments', title: 'Commitments', items: [
             { text: 'You told Harrington\'s CFO: "The wire issue will be resolved by end of last week"', source: 'Email · Mar 5', overdue: true },
             { text: 'You promised Michael Torres: "I\'ll look at the Riverside Bakery escalation today"', source: 'Slack · Friday', overdue: false }
           ]},
@@ -906,7 +906,7 @@ Sales Director, OneUnited Bank`
           { type: 'signals', title: 'Signals & Activity', items: [
             { icon: 'ph-user-edit', text: 'Dr. Chen revised post-op recovery protocol for Patient Rivera — new PT schedule and dietary restrictions · Brief family before the {{T+300}} visit', meta: '{{T-52m}}' }
           ]},
-          { type: 'commitments', title: 'Forgotten Commitments', items: [
+          { type: 'commitments', title: 'Commitments', items: [
             { text: 'You told Patient Nguyen\'s family: "We\'ll resolve the medication scheduling by Friday"', source: 'Call log · Mar 6', overdue: true }
           ]},
           { type: 'blockers', title: 'Awaiting Your Reply', items: [
@@ -988,7 +988,7 @@ Sales Director, OneUnited Bank`
             { timeOffset: 20, title: '2023 BMW X5 — Michael Reeves', context: 'Recall + oil service · prior noise complaint on file', color: '#059669' },
             { timeOffset: 90, title: '2024 BMW 3-Series — Anderson', context: 'TSB-2026-08 iDrive update required', color: '#0176d3' }
           ]},
-          { type: 'commitments', title: 'Forgotten Commitments', items: [
+          { type: 'commitments', title: 'Commitments', items: [
             { text: 'You told Patricia Chen: "We\'ll have the brake noise diagnosed by end of last week"', source: 'Call log · Mar 6', overdue: true }
           ]},
           { type: 'blockers', title: 'Awaiting Your Reply', items: [
@@ -1063,7 +1063,7 @@ Sales Director, OneUnited Bank`
           { type: 'signals', title: 'Signals & Activity', items: [
             { icon: 'ph-user-edit', text: 'Jamie Rivera shifted $120K in Q2 Media Plan from programmatic display to paid social — based on Q1 LinkedIn performance lift · Affects your April creative pipeline', meta: '{{T-120m}}' }
           ]},
-          { type: 'commitments', title: 'Forgotten Commitments', items: [
+          { type: 'commitments', title: 'Commitments', items: [
             { text: 'You told Jamie: "I\'ll review the Q2 media plan reallocation by end of last week"', source: 'Slack · Mar 6', overdue: true },
             { text: 'You promised Legal: "I\'ll send updated APY ad creatives for review before Monday"', source: 'Email · Mar 5', overdue: true }
           ]},
@@ -1139,7 +1139,7 @@ Sales Director, OneUnited Bank`
           { type: 'signals', title: 'Signals & Activity', items: [
             { icon: 'ph-user-edit', text: 'Amy Zhang revised member acquisition attribution model — SEO channel underreported by 18% · Recalculation changes Q1 channel ROI rankings significantly', meta: '{{T-195m}}' }
           ]},
-          { type: 'commitments', title: 'Forgotten Commitments', items: [
+          { type: 'commitments', title: 'Commitments', items: [
             { text: 'You told Amy: "I\'ll validate the attribution model changes before Monday\'s budget meeting"', source: 'Slack · Mar 7', overdue: true },
             { text: 'You promised Legal: "I\'ll review the email sequence disclaimers this week"', source: 'Email · Mar 4', overdue: false }
           ]},
@@ -1215,7 +1215,7 @@ Sales Director, OneUnited Bank`
           { type: 'signals', title: 'Signals & Activity', items: [
             { icon: 'ph-user-edit', text: 'Kevin Zhao updated Q2 Dealer Co-Op Creative Brief — EV incentives now featured in response to Tesla price cut · Affects 4 of your active dealer campaigns', meta: '{{T-60m}}' }
           ]},
-          { type: 'commitments', title: 'Forgotten Commitments', items: [
+          { type: 'commitments', title: 'Commitments', items: [
             { text: 'You told Kevin: "I\'ll approve the Q2 co-op brief by end of last week for agency handoff"', source: 'Slack · Mar 6', overdue: true },
             { text: 'You promised Legal: "I\'ll send the updated campaign disclosures for review before Monday"', source: 'Email · Mar 5', overdue: true }
           ]},

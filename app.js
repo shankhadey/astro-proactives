@@ -18,10 +18,11 @@ const CHROME_IDS = {
 
 let _currentChrome = 'new-tab';
 let _currentPersona = 'sales-banking';
-let _lateCardTimer  = null;
-let _aiCards = [];          // cards added via Claude API
+let _aiCards = [];           // cards added via Claude API
 let _searchResultCards = []; // cards injected by search handler
 let _searchHandler = null;   // hookable external search backend
+let _searchMode  = false;    // whether agentic answer is currently showing
+let _searchQuery = '';       // current search query text
 let _dismissedCardIds  = new Set();  // persists across chrome switches
 let _dismissedCardData = new Map();  // id → card object for done-row restoration
 
@@ -32,8 +33,17 @@ window.App = {
   renderCards,
   // Hookable search: fn(query, chromeKey) → Promise<card[]> | card[]
   registerSearchHandler: (fn) => { _searchHandler = fn; },
-  // Inject result cards above the current feed
-  injectSearchResults:   (cards) => { _searchResultCards = cards; _rerenderWithResults(); }
+  // Inject result cards into the agentic answer area (or main feed as fallback)
+  injectSearchResults: (cards) => {
+    _searchResultCards = cards;
+    const chromeId = CHROME_IDS[_currentChrome];
+    const chromeEl = document.getElementById(chromeId);
+    if (_searchMode && chromeEl) {
+      _updateSearchResults(chromeEl);
+    } else {
+      _rerenderWithResults();
+    }
+  }
 };
 
 // ─── INIT ─────────────────────────────────────────────────────────────────────
@@ -79,7 +89,6 @@ function _initPersonaSelector() {
     const mount    = target?.querySelector('.cards-mount[data-feed="main"]');
     if (mount) {
       _showSkeletons(mount);
-      clearTimeout(_lateCardTimer);
       setTimeout(() => renderCards(mount), 250);
     }
   });
@@ -93,6 +102,85 @@ function _getPersonaCards() {
   const p = _getPersona();
   if (!p || !p.cards) return window.DATA.cards; // sales-banking default
   return p.cards;
+}
+
+// Convert morningDigest action sections (commitments/blockers/cowork) into proactive cards
+function _getDigestActionCards(persona) {
+  if (!persona?.morningDigest?.sections) return [];
+  const result = [];
+  const personaKey = _currentPersona;
+
+  persona.morningDigest.sections.forEach(sec => {
+    if (!['commitments', 'blockers', 'cowork'].includes(sec.type)) return;
+    const items = (sec.items || []).filter(i => !i.fallback);
+
+    items.forEach((item, idx) => {
+      const cardId = `digest-${personaKey}-${sec.type}-${idx}`;
+
+      if (sec.type === 'commitments') {
+        result.push({
+          id: cardId,
+          type: 'commitment',
+          label: 'Commitment',
+          urgency: item.overdue ? 'high' : 'medium',
+          source: 'Astro',
+          sourceBadgeColor: item.overdue ? '#ef4444' : '#f59e0b',
+          sourceIcon: 'ph-clock-countdown',
+          title: item.text,
+          subtitle: item.source || '',
+          body: item.overdue ? 'This commitment is past due.' : 'Commitment detected from your recent conversations.',
+          triggeredBecause: item.overdue ? 'Overdue — originally promised in your messages' : 'Commitment found in recent messages',
+          ctas: [
+            { label: 'Address Now', action: 'toast', message: 'Opening message thread to follow up ✓' },
+            { label: 'Snooze', action: 'toast', message: 'Commitment snoozed for tomorrow 8 AM ✓' }
+          ],
+          timestamp: item.source || 'Earlier today'
+        });
+
+      } else if (sec.type === 'blockers') {
+        result.push({
+          id: cardId,
+          type: 'blocker',
+          label: 'Awaiting Reply',
+          urgency: 'high',
+          source: 'Astro',
+          sourceBadgeColor: '#7c3aed',
+          sourceIcon: 'ph-chat-dots',
+          title: item.text,
+          subtitle: _resolveTokens(item.source || ''),
+          body: 'Your team is blocked and waiting for your input to move forward.',
+          triggeredBecause: 'Your team is waiting on you to unblock this',
+          ctas: [
+            { label: 'Reply Now', action: 'toast', message: 'Opening reply composer ✓' },
+            { label: 'View Thread', action: 'toast', message: 'Opening conversation thread ✓' }
+          ],
+          timestamp: _resolveTokens(item.source || 'Earlier today')
+        });
+
+      } else if (sec.type === 'cowork') {
+        result.push({
+          id: cardId,
+          type: 'cowork-result',
+          label: 'Cowork Result',
+          urgency: 'medium',
+          source: 'Astro Cowork',
+          sourceBadgeColor: '#059669',
+          sourceIcon: 'ph-sparkle',
+          title: item.label || item.title || item.text || 'Cowork task complete',
+          subtitle: item.note || item.detail || '',
+          body: '',
+          triggeredBecause: 'Overnight Astro Cowork job finished — results ready to review',
+          ctas: [
+            { label: 'View Report', panelId: 'morning-brief' },
+            { label: 'Share Results', action: 'toast', message: 'Results shared with your team ✓' }
+          ],
+          timestamp: 'This morning'
+        });
+      }
+    });
+  });
+
+  return result;
 }
 
 function _applyPersonaToChrome() {
@@ -113,7 +201,8 @@ function _initGreeting() {
   const p     = _getPersona();
   const name  = p ? p.user.name.split(' ')[0] : 'Carmen';
   const cards = _getPersonaCards();
-  const count = cards.length;
+  const digestCards = _getDigestActionCards(p);
+  const count = cards.length + digestCards.length;
   const greeting  = `Good ${parts}, ${name}.`;
   const subline   = `Astro surfaced ${count} things that need your attention today.`;
 
@@ -226,6 +315,13 @@ function _initPanelClose() {
   });
 }
 
+// Trigger the late card (support anomaly) for the current chrome's main feed
+function _triggerLateCard() {
+  const chromeId = CHROME_IDS[_currentChrome];
+  const mount = document.querySelector(`#${chromeId} .cards-mount[data-feed="main"]`);
+  if (mount && document.contains(mount)) _arriveLateCard(mount);
+}
+
 // ─── SEARCH BARS ─────────────────────────────────────────────────────────────
 function _initSearchBars() {
   // Attach submit handlers to all search bars (Enter key + Ask button)
@@ -264,24 +360,133 @@ function _initSearchBars() {
 // ─── SEARCH HANDLER ──────────────────────────────────────────────────────────
 async function _handleSearch(query, chromeKey) {
   if (!query || !query.trim()) return;
-  _showToast(`Searching for "${query.trim()}"…`, 'info');
+  _searchQuery = query.trim();
+
+  const chromeId = CHROME_IDS[_currentChrome];
+  const chromeEl = document.getElementById(chromeId);
+  _enterSearchMode(chromeEl, _searchQuery);
+
   if (_searchHandler) {
     try {
-      const results = await Promise.resolve(_searchHandler(query.trim(), chromeKey));
-      if (Array.isArray(results)) window.App.injectSearchResults(results);
+      const results = await Promise.resolve(_searchHandler(_searchQuery, chromeKey));
+      if (Array.isArray(results)) {
+        _searchResultCards = results;
+        _updateSearchResults(chromeEl);
+      } else {
+        _setSearchAnswer(chromeEl, _getMockAnswer(_searchQuery));
+      }
     } catch (e) {
       _showToast('Search error: ' + e.message, 'error');
+      _setSearchAnswer(chromeEl, 'Search encountered an error. Please try again.');
     }
+  } else {
+    // No search handler — show a demo agentic response after a brief delay
+    setTimeout(() => _setSearchAnswer(chromeEl, _getMockAnswer(_searchQuery)), 1200);
   }
 }
 
+// ─── SEARCH MODE ─────────────────────────────────────────────────────────────
+function _enterSearchMode(chromeEl, query) {
+  _searchMode = true;
+  chromeEl?.classList.add('search-active');
+
+  const answerArea = chromeEl?.querySelector('.agentic-answer-area');
+  if (!answerArea) return;
+
+  answerArea.innerHTML = `
+    <div class="aa-top">
+      <button class="aa-back-btn">
+        <i class="ph ph-arrow-left"></i> Back to your feed
+      </button>
+    </div>
+    <div class="aa-query-row">
+      <i class="ph ph-sparkle aa-sparkle"></i>
+      <span class="aa-query-text">"${_escHtml(query)}"</span>
+    </div>
+    <div class="aa-answer-block">
+      <div class="aa-answer-text">
+        <div class="aa-thinking">
+          <div class="aa-thinking-dot"></div>
+          <div class="aa-thinking-dot"></div>
+          <div class="aa-thinking-dot"></div>
+          <span>Searching your workspace…</span>
+        </div>
+      </div>
+    </div>
+    <div class="aa-result-cards"></div>`;
+
+  answerArea.style.display = 'flex';
+  answerArea.querySelector('.aa-back-btn').addEventListener('click', () => {
+    _exitSearchMode(chromeEl);
+  });
+}
+
+function _exitSearchMode(chromeEl) {
+  _searchMode = false;
+  _searchQuery = '';
+  _searchResultCards = [];
+  chromeEl?.classList.remove('search-active');
+
+  const answerArea = chromeEl?.querySelector('.agentic-answer-area');
+  if (answerArea) {
+    answerArea.style.display = 'none';
+    answerArea.innerHTML = '';
+  }
+
+  // Clear search inputs within this chrome
+  chromeEl?.querySelectorAll('.proactive-search-input').forEach(input => {
+    input.value = '';
+  });
+}
+
+function _restoreSearchMode(chromeEl) {
+  _enterSearchMode(chromeEl, _searchQuery);
+  if (_searchResultCards.length > 0) {
+    _updateSearchResults(chromeEl);
+  } else if (_searchQuery) {
+    setTimeout(() => _setSearchAnswer(chromeEl, _getMockAnswer(_searchQuery)), 600);
+  }
+}
+
+function _updateSearchResults(chromeEl) {
+  const answerArea = chromeEl?.querySelector('.agentic-answer-area');
+  if (!answerArea) return;
+
+  _setSearchAnswer(chromeEl,
+    `Astro found <strong>${_searchResultCards.length} result${_searchResultCards.length !== 1 ? 's' : ''}</strong> across your connected workspace for this query.`);
+
+  const resultCards = answerArea.querySelector('.aa-result-cards');
+  if (resultCards) {
+    resultCards.innerHTML = '';
+    _searchResultCards.forEach(card => resultCards.appendChild(_buildCard(card)));
+  }
+}
+
+function _setSearchAnswer(chromeEl, html) {
+  const answerArea = chromeEl?.querySelector('.agentic-answer-area');
+  if (!answerArea) return;
+  const answerBlock = answerArea.querySelector('.aa-answer-block');
+  if (answerBlock) {
+    answerBlock.innerHTML = `<div class="aa-answer-text">${html}</div>`;
+  }
+}
+
+function _getMockAnswer(query) {
+  return `I searched across your Salesforce CRM, Google Drive, email, and calendar for <strong>"${_escHtml(query)}"</strong>. I found relevant deals, contacts, documents, and calendar events. Connect a live search backend via <code>window.App.registerSearchHandler(fn)</code> to surface real results here.`;
+}
+
+function _escHtml(str) {
+  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
 function _rerenderWithResults() {
-  // Re-render current chrome's cards-mount with result cards prepended
-  const mount = document.querySelector(`#${CHROME_IDS[_currentChrome]} .cards-mount`);
+  // Fallback: re-render current chrome's main cards-mount with result cards prepended
+  const mount = document.querySelector(`#${CHROME_IDS[_currentChrome]} .cards-mount[data-feed="main"]`);
   if (!mount) return;
   mount.innerHTML = '';
   const personaCards = _getPersonaCards();
-  const allCards = [..._searchResultCards, ...personaCards, ..._aiCards]
+  const digestCards  = _getDigestActionCards(_getPersona());
+  const allCards = [..._searchResultCards, ...personaCards, ...digestCards, ..._aiCards]
     .filter(c => !_dismissedCardIds.has(c.id));
   allCards.forEach(card => mount.appendChild(_buildCard(card)));
 }
@@ -396,18 +601,9 @@ function _resolveTokens(str) {
 function renderCards(mountEl) {
   mountEl.innerHTML = '';
 
-  // Render morning digest above the grid (main feed only)
-  if (mountEl.dataset.feed === 'main') {
-    const digestMount = mountEl.previousElementSibling;
-    if (digestMount && digestMount.classList.contains('morning-digest-mount')) {
-      const p = _getPersona();
-      const digest = p?.morningDigest || null;
-      _renderMorningDigest(digestMount, digest);
-    }
-  }
-
   const personaCards = _getPersonaCards();
-  const allCards = [..._searchResultCards, ...personaCards, ..._aiCards]
+  const digestCards  = _getDigestActionCards(_getPersona());
+  const allCards = [...personaCards, ...digestCards, ..._aiCards]
     .filter(c => !_dismissedCardIds.has(c.id));
   allCards.forEach(card => mountEl.appendChild(_buildCard(card)));
 
@@ -422,10 +618,10 @@ function renderCards(mountEl) {
     section.classList.add('open');
   }
 
-  // Schedule late card arrival on main feed (simulates real-time update)
-  if (mountEl.dataset.feed === 'main') {
-    clearTimeout(_lateCardTimer);
-    _lateCardTimer = setTimeout(() => _arriveLateCard(mountEl), 11000);
+  // Restore search mode if it was active (e.g. after switching from cowork and back)
+  if (_searchMode) {
+    const chromeEl = mountEl.closest('.chrome-wrapper');
+    if (chromeEl) _restoreSearchMode(chromeEl);
   }
 }
 
@@ -450,124 +646,6 @@ function _buildDoneRow(card, mountEl) {
     if (mountEl?.isConnected) mountEl.prepend(_buildCard(card));
   });
   return doneRow;
-}
-
-// ─── MORNING DIGEST ───────────────────────────────────────────────────────────
-function _renderMorningDigest(mountEl, digestData) {
-  mountEl.innerHTML = '';
-  if (!digestData) return;
-
-  const SECTION_ICONS = {
-    calendar:    'ph-calendar',
-    signals:     'ph-activity',
-    commitments: 'ph-clock-countdown',
-    blockers:    'ph-chat-dots',
-    cowork:      'ph-sparkle',
-    focus:       'ph-leaf'
-  };
-
-  // Fallback items per section type
-  const FALLBACKS = {
-    calendar:    [{ fallback: true, text: 'Connect your calendar to see today\'s meetings', action: 'Connect Calendar' }],
-    cowork:      [{ fallback: true, text: 'No cowork tasks defined yet', action: 'Set up a task in Astro Cowork' }],
-    focus:       [{ fallback: true, text: 'No focus window suggestions — add your work schedule preferences', action: 'Update preferences' }]
-  };
-
-  const sectionsHtml = digestData.sections.map(sec => {
-    const icon  = SECTION_ICONS[sec.type] || 'ph-list';
-    const items = (sec.items && sec.items.length) ? sec.items : (FALLBACKS[sec.type] || []);
-    let itemsHtml = '';
-
-    if (sec.type === 'calendar') {
-      itemsHtml = items.map(item => {
-        if (item.fallback) return `<div class="md-fallback"><i class="ph ph-plug"></i>${item.text}</div>`;
-        // Support timeOffset (minutes from now) or hardcoded time
-        const timeStr = item.timeOffset !== undefined ? _timeFromNow(item.timeOffset) : _resolveTokens(item.time || '');
-        return `
-          <div class="md-cal-item" style="border-left-color:${item.color || 'var(--accent)'}">
-            <div class="md-cal-time">${timeStr}</div>
-            <div class="md-cal-text">
-              <div class="md-cal-title">${_resolveTokens(item.title)}</div>
-              ${item.context ? `<div class="md-cal-context">${_resolveTokens(item.context)}</div>` : ''}
-            </div>
-          </div>`;
-      }).join('');
-
-    } else if (sec.type === 'signals') {
-      itemsHtml = items.map(item => `
-        <div class="md-signal-item">
-          <i class="ph ${item.icon || 'ph-pulse'} md-signal-icon"></i>
-          <div class="md-signal-text">
-            <div class="md-signal-content">${_resolveTokens(item.text)}</div>
-            ${item.meta ? `<div class="md-signal-meta">${_resolveTokens(item.meta)}</div>` : ''}
-          </div>
-        </div>`).join('');
-
-    } else if (sec.type === 'commitments' || sec.type === 'blockers') {
-      const iconClass = sec.type === 'blockers' ? 'blocker' : '';
-      itemsHtml = items.map(item => `
-        <div class="md-commit-item">
-          <i class="ph ${sec.type === 'blockers' ? 'ph-chat-dots' : 'ph-clock-countdown'} md-commit-icon ${item.overdue ? 'overdue' : ''} ${iconClass}"></i>
-          <div class="md-commit-text">
-            <div class="md-commit-title">${_resolveTokens(item.text)}</div>
-            ${item.source ? `<div class="md-commit-source">${_resolveTokens(item.source)}</div>` : ''}
-          </div>
-        </div>`).join('');
-
-    } else if (sec.type === 'cowork') {
-      itemsHtml = items.map(item => {
-        if (item.fallback) return `<div class="md-fallback"><i class="ph ph-plus-circle"></i>${item.text}</div>`;
-        return `
-          <div class="md-cowork-item">
-            <i class="ph ph-sparkle md-cowork-icon"></i>
-            <div class="md-cowork-text">
-              <div class="md-cowork-title">${_resolveTokens(item.label || item.title || item.text)}</div>
-              ${item.note || item.detail ? `<div class="md-cowork-detail">${_resolveTokens(item.note || item.detail)}</div>` : ''}
-            </div>
-          </div>`;
-      }).join('');
-
-    } else if (sec.type === 'focus') {
-      itemsHtml = items.map(item => {
-        if (item.fallback) return `<div class="md-fallback"><i class="ph ph-leaf"></i>${item.text}</div>`;
-        return `
-          <div class="md-focus-item">
-            <i class="ph ph-leaf md-focus-icon"></i>
-            <div class="md-focus-text">${_resolveTokens(item.text || item.note || item.title)}</div>
-          </div>`;
-      }).join('');
-    }
-
-    return `
-      <div class="md-section">
-        <div class="md-section-title"><i class="ph ${icon}"></i>${sec.title}</div>
-        <div class="md-items">${itemsHtml}</div>
-      </div>`;
-  }).join('');
-
-  const todayStr = new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
-
-  const digest = document.createElement('div');
-  digest.className = 'morning-digest open'; // partially expanded by default
-  digest.innerHTML = `
-    <div class="md-header">
-      <div class="md-header-icon"><i class="ph ph-sun-horizon"></i></div>
-      <div class="md-header-text">
-        <div class="md-header-title">Morning Digest</div>
-        <div class="md-header-date">${todayStr}</div>
-        <div class="md-header-summary">${_resolveTokens(digestData.summary || '')}</div>
-      </div>
-      <i class="ph ph-caret-right md-chevron"></i>
-    </div>
-    <div class="md-body">
-      <div class="md-sections">${sectionsHtml}</div>
-    </div>`;
-
-  digest.querySelector('.md-header').addEventListener('click', () => {
-    digest.classList.toggle('open');
-  });
-
-  mountEl.appendChild(digest);
 }
 
 // ─── COMPLETED SECTION ────────────────────────────────────────────────────────
@@ -906,5 +984,10 @@ document.addEventListener('keydown', (e) => {
   if (e.key === 'Escape') {
     const nav = document.getElementById('demo-controls');
     nav.classList.remove('is-active');
+  }
+  // Ctrl+Shift+S — trigger the support anomaly card (late card) for the current chrome
+  if (e.ctrlKey && e.shiftKey && e.key === 'S') {
+    e.preventDefault();
+    _triggerLateCard();
   }
 });
